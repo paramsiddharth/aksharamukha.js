@@ -1,0 +1,25 @@
+{
+  "name": "aksharamukha",
+  "version": "2.3.0-0",
+  "description": "Aksharamukha in your browser!",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paramsiddharth/aksharamukha.js.git"
+  },
+  "keywords": [
+    "aksharamukha",
+    "language",
+    "transliteration",
+    "indic"
+  ],
+  "author": "Param Siddharth",
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/paramsiddharth/aksharamukha.js/issues"
+  },
+  "homepage": "https://github.com/paramsiddharth/aksharamukha.js#readme"
+}
