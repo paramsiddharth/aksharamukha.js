@@ -1,2 +1,2 @@
-import Aksharamukha from "./aksharamukha";
+import Aksharamukha from './aksharamukha';
 export default Aksharamukha;

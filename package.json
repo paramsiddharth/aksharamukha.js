@@ -15,7 +15,8 @@
 	},
 	"scripts": {
 		"build": "tsup",
-		"test": "npm run lint",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"lint": "eslint",
 		"lint:fix": "eslint --fix"
 	},
@@ -37,12 +38,15 @@
 	"homepage": "https://github.com/paramsiddharth/aksharamukha.js#readme",
 	"devDependencies": {
 		"@eslint/js": "^9.36.0",
+		"@types/node": "^24.6.0",
 		"@typescript-eslint/eslint-plugin": "^8.45.0",
 		"@typescript-eslint/parser": "^8.45.0",
 		"eslint": "^9.36.0",
 		"globals": "^16.4.0",
+		"jsdom": "^27.0.0",
 		"tsup": "^8.5.0",
-		"typescript": "^5.9.2"
+		"typescript": "^5.9.2",
+		"vitest": "^3.2.4"
 	},
 	"dependencies": {
 		"pyodide": "^0.28.3"
