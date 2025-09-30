@@ -2,8 +2,18 @@
   "name": "aksharamukha",
   "version": "2.3.0-0",
   "description": "Aksharamukha in your browser!",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+	".": {
+		"require": "./dist/index.js",
+		"import": "./dist/index.mjs",
+		"types": "./dist/index.global.js"
+	}
+  },
   "scripts": {
+	"build": "tsup",
     "test": "node ./test/test.js"
   },
   "repository": {
@@ -21,5 +31,9 @@
   "bugs": {
     "url": "https://github.com/paramsiddharth/aksharamukha.js/issues"
   },
-  "homepage": "https://github.com/paramsiddharth/aksharamukha.js#readme"
+  "homepage": "https://github.com/paramsiddharth/aksharamukha.js#readme",
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  }
 }
