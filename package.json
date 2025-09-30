@@ -1,25 +1,46 @@
 {
-  "name": "aksharamukha",
-  "version": "2.3.0-0",
-  "description": "Aksharamukha in your browser!",
-  "main": "index.js",
-  "scripts": {
-    "test": "node ./test/test.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/paramsiddharth/aksharamukha.js.git"
-  },
-  "keywords": [
-    "aksharamukha",
-    "language",
-    "transliteration",
-    "indic"
-  ],
-  "author": "Param Siddharth",
-  "license": "GPL-3.0-only",
-  "bugs": {
-    "url": "https://github.com/paramsiddharth/aksharamukha.js/issues"
-  },
-  "homepage": "https://github.com/paramsiddharth/aksharamukha.js#readme"
+	"name": "aksharamukha",
+	"version": "2.3.0-0",
+	"type": "module",
+	"description": "Aksharamukha in your browser!",
+	"main": "dist/index.cjs",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"browser": "./dist/index.global.js",
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsup",
+		"test": "npm run lint",
+		"lint": "eslint",
+		"lint:fix": "eslint --fix"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/paramsiddharth/aksharamukha.js.git"
+	},
+	"keywords": [
+		"aksharamukha",
+		"language",
+		"transliteration",
+		"indic"
+	],
+	"author": "Param Siddharth",
+	"license": "GPL-3.0-only",
+	"bugs": {
+		"url": "https://github.com/paramsiddharth/aksharamukha.js/issues"
+	},
+	"homepage": "https://github.com/paramsiddharth/aksharamukha.js#readme",
+	"devDependencies": {
+		"@eslint/js": "^9.36.0",
+		"@typescript-eslint/eslint-plugin": "^8.45.0",
+		"@typescript-eslint/parser": "^8.45.0",
+		"eslint": "^9.36.0",
+		"tsup": "^8.5.0",
+		"typescript": "^5.9.2"
+	}
 }
