@@ -8,10 +8,10 @@
 	"types": "dist/index.d.ts",
 	"exports": {
 		".": {
-		"browser": "./dist/index.global.js",
-		"require": "./dist/index.cjs",
-		"import": "./dist/index.js"
-	}
+			"browser": "./dist/index.global.js",
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.js"
+		}
 	},
 	"scripts": {
 		"build": "tsup",
