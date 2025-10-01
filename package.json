@@ -14,8 +14,9 @@
 		}
 	},
 	"scripts": {
-		"postinstall": "tsx ./src/download-wheels.ts",
+		"postinstall": "npm run download-wheels",
 		"build": "tsup",
+		"download-wheels": "tsx ./src/download-wheels.ts",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"lint": "eslint",

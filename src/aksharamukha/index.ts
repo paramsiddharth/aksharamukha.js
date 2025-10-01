@@ -1,4 +1,5 @@
 import { loadPyodide, type PyodideInterface } from 'pyodide';
+import fs from 'fs';
 
 import { wheels } from '../constants';
 
@@ -43,7 +44,11 @@ export default class Aksharamukha {
 		const micropip = pyodide.pyimport('micropip');
 
 		for (const wheel of wheels) {
-			await micropip.install(`file://${__dirname}/../../downloads/${wheel}`, { keep_going: true });
+			const wheelPath = `${__dirname}/../../downloads/${wheel}`;
+			const wheelData = fs.readFileSync(wheelPath);
+			pyodide.FS.writeFile(`/tmp/${wheel}`, wheelData);
+			await micropip.install(`emfs:/tmp/${wheel}`, { keep_going: true });
+			pyodide.FS.unlink(`/tmp/${wheel}`);
 		}
 
 		pyodide.runPython(`from aksharamukha import *`); // Pre-import to speed up further calls
