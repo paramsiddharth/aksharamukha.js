@@ -37,6 +37,7 @@ type aksharamukhaInitOptions = {
 
 export default class Aksharamukha {
 	static _isTestEnv: boolean = false;
+	static _currentScript: HTMLScriptElement;
 	pyodide: PyodideInterface;
 
 	private constructor(pyodide: PyodideInterface) {
@@ -67,7 +68,13 @@ export default class Aksharamukha {
 			}
 		} else {
 			for (const wheel of wheels) {
-				await micropip.install(`${wheelBaseURL}/${wheel}`, { keep_going: true });
+				try {
+					const scriptPath = this._currentScript.src;
+					const parentPath = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
+					await micropip.install(`${parentPath}/${wheel}`, { keep_going: true })
+				} catch {
+					await micropip.install(`${wheelBaseURL}/${wheel}`, { keep_going: true })
+				}
 			}
 		}
 
