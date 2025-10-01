@@ -1,7 +1,7 @@
 import { loadPyodide, type PyodideInterface } from 'pyodide';
-import fs from 'fs';
+import { wheelBaseURL, wheels } from '../constants';
 
-import { wheels } from '../constants';
+const isNode = typeof window === 'undefined' || (typeof process !== 'undefined' && process.versions?.node);
 
 type processProps = {
 	src: string,
@@ -24,6 +24,17 @@ export const enum transliterateParam {
 	langName = 'lang_name'
 }
 
+const defaultProps: transliterateProps = {
+	nativize: true,
+	param: transliterateParam.default,
+	preOptions: [],
+	postOptions: []
+};
+
+type aksharamukhaInitOptions = {
+	pyodide?: PyodideInterface;
+};
+
 export default class Aksharamukha {
 	static _isTestEnv: boolean = false;
 	pyodide: PyodideInterface;
@@ -32,23 +43,32 @@ export default class Aksharamukha {
 		this.pyodide = pyodide;
 	}
 
-	public static async new(): Promise<Aksharamukha> {
-		var pyodide: PyodideInterface;
-		if (this._isTestEnv) {
-			pyodide = await loadTestPyodide();
-		} else {
-			pyodide = await loadPyodide();
+	public static async new(opts?: aksharamukhaInitOptions): Promise<Aksharamukha> {
+		let pyodide = opts?.pyodide;
+		if (pyodide == null) {
+			if (this._isTestEnv) {
+				pyodide = await loadTestPyodide();
+			} else {
+				pyodide = await loadPyodide();
+			}
 		}
 
 		await pyodide.loadPackage('micropip');
 		const micropip = pyodide.pyimport('micropip');
 
-		for (const wheel of wheels) {
-			const wheelPath = `${__dirname}/../../downloads/${wheel}`;
-			const wheelData = fs.readFileSync(wheelPath);
-			pyodide.FS.writeFile(`/tmp/${wheel}`, wheelData);
-			await micropip.install(`emfs:/tmp/${wheel}`, { keep_going: true });
-			pyodide.FS.unlink(`/tmp/${wheel}`);
+		if (isNode) {
+			const fs = await import('fs');
+			for (const wheel of wheels) {
+				const wheelPath = `${__dirname}/../../downloads/${wheel}`;
+				const wheelData = fs.readFileSync(wheelPath);
+				pyodide.FS.writeFile(`/tmp/${wheel}`, wheelData);
+				await micropip.install(`emfs:/tmp/${wheel}`, { keep_going: true });
+				pyodide.FS.unlink(`/tmp/${wheel}`);
+			}
+		} else {
+			for (const wheel of wheels) {
+				await micropip.install(`${wheelBaseURL}/${wheel}`, { keep_going: true });
+			}
 		}
 
 		pyodide.runPython(`from aksharamukha import *`); // Pre-import to speed up further calls
@@ -67,11 +87,11 @@ export default class Aksharamukha {
 		tgt: string,
 		txt: string,
 		{
-			nativize = true,
-			param = transliterateParam.default,
-			preOptions = [],
-			postOptions = []
-		}: transliterateProps
+			nativize,
+			param,
+			preOptions,
+			postOptions
+		}: transliterateProps = defaultProps
 	) {
 		const cmd = buildCMD({
 			src,
@@ -92,11 +112,11 @@ export default class Aksharamukha {
 		tgt: string,
 		txt: string,
 		{
-			nativize = true,
-			param = transliterateParam.default,
-			preOptions = [],
-			postOptions = []
-		}: transliterateProps
+			nativize,
+			param,
+			preOptions,
+			postOptions
+		}: transliterateProps = defaultProps
 	) {
 		const cmd = buildCMD({
 			src,

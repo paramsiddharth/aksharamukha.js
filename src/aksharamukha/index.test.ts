@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { loadPyodide } from 'pyodide';
 
 import Aksharamukha, { transliterateParam } from '.';
 
@@ -32,9 +33,16 @@ describe('Aksharamukha', () => {
 		it('should initialize without error', async () => {
 			instance = await Aksharamukha.new();
 			expect(instance).toBeInstanceOf(Aksharamukha);
+			await instance.test();
 		});
 
-		it('should run test method correctly', async () => {
+		it('should initialize with provided Pyodide instance', async () => {
+			const pyodide = await loadPyodide({
+				indexURL: './node_modules/pyodide',
+				packageCacheDir: './node_modules/pyodide'
+			});
+			instance = await Aksharamukha.new({ pyodide });
+			expect(instance).toBeInstanceOf(Aksharamukha);
 			await instance.test();
 		});
 	});

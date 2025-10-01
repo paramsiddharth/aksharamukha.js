@@ -3,11 +3,11 @@ import axios from 'axios';
 // @ts-expect-error: No types available for old package.
 import fs from 'fs-extra';
 
-import { wheels } from './constants';
+import { wheelBaseURL, wheels } from './constants';
 
 fs.ensureDirSync('./downloads');
 for (const wheel of wheels) {
-	const url = `https://github.com/paramsiddharth/aksharamukha.js/releases/download/v2.3.0-0/${wheel}`;
+	const url = `${wheelBaseURL}/${wheel}`;
 	const options = { directory: './downloads', filename: wheel };
 	console.log(`Downloading ${wheel}...`);
 	try {
