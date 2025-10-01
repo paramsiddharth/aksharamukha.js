@@ -1,5 +1,11 @@
 import { defineConfig } from 'tsup';
 
+const pyodideDependencies = [
+	'pyodide-lock.json',
+	'pyodide.asm.wasm',
+	'pyodide.asm.js',
+];
+
 export default defineConfig({
 	entry: ['src/index.ts'],
 	format: ['cjs', 'esm', 'iife'],  // CommonJS, ES Modules, and Browser IIFE
@@ -29,8 +35,16 @@ export default defineConfig({
 		// Copy everything from downloads to dist
 		const fs = await import('fs');
 		const files = fs.lstatSync('./downloads', { throwIfNoEntry: true });
-		if (files.isDirectory()) {
-			fs.cpSync('./downloads', './dist', { recursive: true });
+		if (!files.isDirectory()) {
+			throw new Error('./downloads is not a directory.');
+		}
+
+		fs.cpSync('./downloads', './dist', { recursive: true });
+		const pyodideFiles = fs.readdirSync('./node_modules/pyodide');
+		for (const file of pyodideFiles) {
+			if (file.endsWith('.whl') || file.endsWith('.zip') || pyodideDependencies.includes(file)) {
+				fs.cpSync(`./node_modules/pyodide/${file}`, `./dist/${file}`);
+			}
 		}
 	}
 });
