@@ -15,7 +15,6 @@
 	},
 	"scripts": {
 		"prepublishOnly": "npm run build",
-		"postinstall": "npm run download-wheels",
 		"build": "tsup",
 		"download-wheels": "tsx ./src/download-wheels.ts",
 		"test": "vitest run",
