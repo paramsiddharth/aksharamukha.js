@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
-import Aksharamukha from '.';
-import { transliterateParam } from './aksharamukha';
+import Aksharamukha, { transliterateParam } from '.';
 
 describe('Aksharamukha', () => {
 	describe('Basic structure and initialization', () => {
