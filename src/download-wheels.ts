@@ -25,5 +25,4 @@ for (const wheel of wheels) {
 		process.exit(1);
 	}
 	console.log(`Downloaded ${wheel} to ${options.directory}/${options.filename}.`);
-	await new Promise((resolve) => setTimeout(resolve, 500));
 }
