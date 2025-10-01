@@ -19,12 +19,6 @@ export default defineConfig({
 		},
 		testTimeout: 60000,
 		setupFiles: ['./setup-tests.ts'],
-		pool: 'threads',
-		poolOptions: {
-			threads: {
-				singleThread: true
-			}
-		}
 	},
 	// Might be needed later.
 	/* server: {
