@@ -8,7 +8,7 @@ jobs:
   deploy:
     name: Deploy to npm
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.head_commit.author.email != 'github-actions[bot]@users.noreply.github.com'
 
     steps:
       - name: Checkout code
@@ -75,6 +75,7 @@ jobs:
 
       - name: Push tag and version commit
         run: |
+          NEW_VERSION="${{ steps.version.outputs.new_version }}"
           git push origin main
           git push origin "v$NEW_VERSION"
 
