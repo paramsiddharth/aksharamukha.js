@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { loadPyodide } from 'pyodide';
 
-import Aksharamukha, { transliterateParam } from '.';
+import Aksharamukha, { processParam } from '.';
 
 describe('Aksharamukha', () => {
 	describe('Basic structure and initialization', () => {
@@ -90,7 +90,7 @@ describe('Aksharamukha', () => {
 				({ src, tgt, txt, expected }) => {
 					const result = instance.process(src, tgt, txt, {
 						nativize: true,
-						param: transliterateParam.default,
+						param: processParam.default,
 						preOptions: [],
 						postOptions: []
 					});
@@ -115,7 +115,7 @@ describe('Aksharamukha', () => {
 				({ src, tgt, txt, expected }) => {
 					const result = instance.process(src, tgt, txt, {
 						nativize: false,
-						param: transliterateParam.default,
+						param: processParam.default,
 						preOptions: [],
 						postOptions: []
 					});
@@ -141,7 +141,7 @@ describe('Aksharamukha', () => {
 				({ src, tgt, txt, postOptions, expected }) => {
 					const result = instance.process(src, tgt, txt, {
 						nativize: false,
-						param: transliterateParam.default,
+						param: processParam.default,
 						preOptions: [],
 						postOptions
 					});
@@ -175,7 +175,7 @@ describe('Aksharamukha', () => {
 				({ src, tgt, txt, preOptions, expected }) => {
 					const result = instance.process(src, tgt, txt, {
 						nativize: true,
-						param: transliterateParam.default,
+						param: processParam.default,
 						preOptions,
 						postOptions: []
 					});
@@ -214,7 +214,7 @@ describe('Aksharamukha', () => {
 				({ src, tgt, txt, expected }) => {
 					const result = instance.process(src, tgt, txt, {
 						nativize: true,
-						param: transliterateParam.scriptCode,
+						param: processParam.scriptCode,
 						preOptions: [],
 						postOptions: []
 					});
@@ -274,7 +274,7 @@ describe('Aksharamukha', () => {
 				({ src, tgt, txt, expected }) => {
 					const result = instance.process(src, tgt, txt, {
 						nativize: true,
-						param: transliterateParam.langCode,
+						param: processParam.langCode,
 						preOptions: [],
 						postOptions: []
 					});
@@ -306,7 +306,7 @@ describe('Aksharamukha', () => {
 				({ src, tgt, txt, expected }) => {
 					const result = instance.process(src, tgt, txt, {
 						nativize: true,
-						param: transliterateParam.langName,
+						param: processParam.langName,
 						preOptions: [],
 						postOptions: []
 					});

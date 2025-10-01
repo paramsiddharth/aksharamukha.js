@@ -12,12 +12,12 @@ type processProps = {
 
 type transliterateProps = {
 	nativize: boolean;
-	param: transliterateParam;
+	param: processParam;
 	preOptions: string[];
 	postOptions: string[];
 };
 
-export const enum transliterateParam {
+export const enum processParam {
 	default = 'default',
 	scriptCode = 'script_code',
 	langCode = 'lang_code',
@@ -26,7 +26,7 @@ export const enum transliterateParam {
 
 const defaultProps: transliterateProps = {
 	nativize: true,
-	param: transliterateParam.default,
+	param: processParam.default,
 	preOptions: [],
 	postOptions: []
 };
@@ -60,8 +60,17 @@ export default class Aksharamukha {
 		if (isNode) {
 			const fs = await import('fs');
 			for (const wheel of wheels) {
-				const wheelPath = `${__dirname}/../../downloads/${wheel}`;
-				const wheelData = fs.readFileSync(wheelPath);
+				let wheelData: Buffer<ArrayBuffer>;
+
+				try {
+					const wheelPath = `${__dirname}/${wheel}`;
+					wheelData = fs.readFileSync(wheelPath);
+				} catch (e) {
+					console.warn(`Wheel file missing in script directory, trying ../../downloads: ${e}`);
+					const wheelPath = `${__dirname}/../../downloads/${wheel}`;
+					wheelData = fs.readFileSync(wheelPath);
+				}
+
 				pyodide.FS.writeFile(`/tmp/${wheel}`, wheelData);
 				await micropip.install(`emfs:/tmp/${wheel}`, { keep_going: true });
 				pyodide.FS.unlink(`/tmp/${wheel}`);
@@ -105,10 +114,10 @@ export default class Aksharamukha {
 			tgt,
 			txt,
 			props: {
-				nativize,
-				param,
-				preOptions,
-				postOptions
+				nativize: nativize ?? defaultProps.nativize,
+				param: param ?? defaultProps.param,
+				preOptions: preOptions ?? defaultProps.preOptions,
+				postOptions: postOptions ?? defaultProps.postOptions
 			}
 		});
 		return this.pyodide.runPython(cmd);
@@ -130,10 +139,10 @@ export default class Aksharamukha {
 			tgt,
 			txt,
 			props: {
-				nativize,
-				param,
-				preOptions,
-				postOptions
+				nativize: nativize ?? defaultProps.nativize,
+				param: param ?? defaultProps.param,
+				preOptions: preOptions ?? defaultProps.preOptions,
+				postOptions: postOptions ?? defaultProps.postOptions
 			}
 		});
 		return await this.pyodide.runPythonAsync(cmd);
