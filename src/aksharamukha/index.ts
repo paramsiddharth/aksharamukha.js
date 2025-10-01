@@ -1,5 +1,7 @@
 import { loadPyodide, type PyodideInterface } from 'pyodide';
 
+import { wheels } from '../constants';
+
 type processProps = {
 	src: string,
 	tgt: string,
@@ -20,12 +22,6 @@ export const enum transliterateParam {
 	langCode = 'lang_code',
 	langName = 'lang_name'
 }
-
-const wheels = [
-	'jaconv-0.4.0-py3-none-any.whl',
-	'marisa_trie-1.3.2.dev0-cp313-cp313-pyodide_2025_0_wasm32.whl',
-	'aksharamukha-2.3-py3-none-any.whl'
-];
 
 export default class Aksharamukha {
 	static _isTestEnv: boolean = false;
