@@ -62,7 +62,7 @@ export default class Aksharamukha {
 		}
 	}
 
-	public transliterate(
+	public process(
 		src: string,
 		tgt: string,
 		txt: string,
@@ -87,7 +87,7 @@ export default class Aksharamukha {
 		return this.pyodide.runPython(cmd);
 	}
 
-	public async transliterateAsync(
+	public async processAsync(
 		src: string,
 		tgt: string,
 		txt: string,

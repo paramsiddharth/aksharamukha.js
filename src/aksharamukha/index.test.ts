@@ -80,7 +80,7 @@ describe('Aksharamukha', () => {
 			it.each(basicTests)(
 				'$description',
 				({ src, tgt, txt, expected }) => {
-					const result = instance.transliterate(src, tgt, txt, {
+					const result = instance.process(src, tgt, txt, {
 						nativize: true,
 						param: transliterateParam.default,
 						preOptions: [],
@@ -105,7 +105,7 @@ describe('Aksharamukha', () => {
 			it.each(nativizeTests)(
 				'$description',
 				({ src, tgt, txt, expected }) => {
-					const result = instance.transliterate(src, tgt, txt, {
+					const result = instance.process(src, tgt, txt, {
 						nativize: false,
 						param: transliterateParam.default,
 						preOptions: [],
@@ -131,7 +131,7 @@ describe('Aksharamukha', () => {
 			it.each(postOptionsTests)(
 				'$description',
 				({ src, tgt, txt, postOptions, expected }) => {
-					const result = instance.transliterate(src, tgt, txt, {
+					const result = instance.process(src, tgt, txt, {
 						nativize: false,
 						param: transliterateParam.default,
 						preOptions: [],
@@ -165,7 +165,7 @@ describe('Aksharamukha', () => {
 			it.each(preOptionsTests)(
 				'$description',
 				({ src, tgt, txt, preOptions, expected }) => {
-					const result = instance.transliterate(src, tgt, txt, {
+					const result = instance.process(src, tgt, txt, {
 						nativize: true,
 						param: transliterateParam.default,
 						preOptions,
@@ -204,7 +204,7 @@ describe('Aksharamukha', () => {
 			it.each(scriptCodeTests)(
 				'$description',
 				({ src, tgt, txt, expected }) => {
-					const result = instance.transliterate(src, tgt, txt, {
+					const result = instance.process(src, tgt, txt, {
 						nativize: true,
 						param: transliterateParam.scriptCode,
 						preOptions: [],
@@ -264,7 +264,7 @@ describe('Aksharamukha', () => {
 			it.each(langCodeTests)(
 				'$description',
 				({ src, tgt, txt, expected }) => {
-					const result = instance.transliterate(src, tgt, txt, {
+					const result = instance.process(src, tgt, txt, {
 						nativize: true,
 						param: transliterateParam.langCode,
 						preOptions: [],
@@ -296,7 +296,7 @@ describe('Aksharamukha', () => {
 			it.each(langNameTests)(
 				'$description',
 				({ src, tgt, txt, expected }) => {
-					const result = instance.transliterate(src, tgt, txt, {
+					const result = instance.process(src, tgt, txt, {
 						nativize: true,
 						param: transliterateParam.langName,
 						preOptions: [],
