@@ -68,7 +68,7 @@ jobs:
       - name: Update version and create tag
         run: |
           NEW_VERSION="${{ steps.version.outputs.new_version }}"
-          npm version $NEW_VERSION --no-git-tag-version
+          npm version $NEW_VERSION
 
       - name: Build package
         run: npm run build
