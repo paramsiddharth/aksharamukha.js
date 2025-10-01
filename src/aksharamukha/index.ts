@@ -3,35 +3,37 @@ import { wheelBaseURL, wheels } from '../constants';
 
 const isNode = typeof window === 'undefined' || (typeof process !== 'undefined' && process.versions?.node);
 
-type processProps = {
+export type ProcessArgs = {
 	src: string,
 	tgt: string,
 	txt: string,
-	props: transliterateProps
+	props: ProcessProps
 };
 
-type transliterateProps = {
+export type ProcessProps = {
 	nativize: boolean;
-	param: processParam;
+	param: ProcessParam;
 	preOptions: string[];
 	postOptions: string[];
 };
 
-export const enum processParam {
-	default = 'default',
-	scriptCode = 'script_code',
-	langCode = 'lang_code',
-	langName = 'lang_name'
-}
+export const ProcessParams = {
+	default: 'default',
+	scriptCode: 'script_code',
+	langCode: 'lang_code',
+	langName: 'lang_name'
+} as const;
 
-const defaultProps: transliterateProps = {
+export type ProcessParam = typeof ProcessParams[keyof typeof ProcessParams];
+
+export const defaultProcessProps: ProcessProps = {
 	nativize: true,
-	param: processParam.default,
+	param: ProcessParams.default,
 	preOptions: [],
 	postOptions: []
 };
 
-type aksharamukhaInitOptions = {
+export type AksharamukhaInitOptions = {
 	pyodide?: PyodideInterface;
 };
 
@@ -44,7 +46,11 @@ export default class Aksharamukha {
 		this.pyodide = pyodide;
 	}
 
-	public static async new(opts?: aksharamukhaInitOptions): Promise<Aksharamukha> {
+	public static setCurrentScript(script: HTMLScriptElement) {
+		this._currentScript = script;
+	}
+
+	public static async new(opts?: AksharamukhaInitOptions): Promise<Aksharamukha> {
 		let pyodide = opts?.pyodide;
 		if (pyodide == null) {
 			if (this._isTestEnv) {
@@ -108,17 +114,17 @@ export default class Aksharamukha {
 			param,
 			preOptions,
 			postOptions
-		}: transliterateProps = defaultProps
+		}: ProcessProps = defaultProcessProps
 	) {
 		const cmd = buildCMD({
 			src,
 			tgt,
 			txt,
 			props: {
-				nativize: nativize ?? defaultProps.nativize,
-				param: param ?? defaultProps.param,
-				preOptions: preOptions ?? defaultProps.preOptions,
-				postOptions: postOptions ?? defaultProps.postOptions
+				nativize: nativize ?? defaultProcessProps.nativize,
+				param: param ?? defaultProcessProps.param,
+				preOptions: preOptions ?? defaultProcessProps.preOptions,
+				postOptions: postOptions ?? defaultProcessProps.postOptions
 			}
 		});
 		return this.pyodide.runPython(cmd);
@@ -133,17 +139,17 @@ export default class Aksharamukha {
 			param,
 			preOptions,
 			postOptions
-		}: transliterateProps = defaultProps
+		}: ProcessProps = defaultProcessProps
 	) {
 		const cmd = buildCMD({
 			src,
 			tgt,
 			txt,
 			props: {
-				nativize: nativize ?? defaultProps.nativize,
-				param: param ?? defaultProps.param,
-				preOptions: preOptions ?? defaultProps.preOptions,
-				postOptions: postOptions ?? defaultProps.postOptions
+				nativize: nativize ?? defaultProcessProps.nativize,
+				param: param ?? defaultProcessProps.param,
+				preOptions: preOptions ?? defaultProcessProps.preOptions,
+				postOptions: postOptions ?? defaultProcessProps.postOptions
 			}
 		});
 		return await this.pyodide.runPythonAsync(cmd);
@@ -157,8 +163,8 @@ async function loadTestPyodide(): Promise<PyodideInterface> {
 	})
 }
 
-function buildCMD(props: processProps) {
-	return 	`
+function buildCMD(props: ProcessArgs) {
+	return `
 		from aksharamukha import transliterate
 		transliterate.process(
 			${JSON.stringify(props.src)},

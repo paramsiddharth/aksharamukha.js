@@ -20,7 +20,7 @@ export default defineConfig({
 			options.footer = {
 				js: `
 					Object.assign(window, { ${options.globalName}: ${options.globalName}.default });
-					Object.assign(window.Aksharamukha, { _currentScript: document.currentScript });
+					window.${options.globalName}.setCurrentScript(document.currentScript);
 				`
 			};
 		}
