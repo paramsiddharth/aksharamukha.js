@@ -1,6 +1,4 @@
 import axios from 'axios';
-
-// @ts-expect-error: No types available for this package
 import fs from 'fs-extra';
 
 import { wheelBaseURL, wheels } from './constants';
