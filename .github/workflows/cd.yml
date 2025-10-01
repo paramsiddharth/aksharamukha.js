@@ -92,3 +92,4 @@ jobs:
           body: Automated release v${{ steps.version.outputs.new_version }}.
           draft: false
           prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
