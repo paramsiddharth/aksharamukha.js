@@ -61,13 +61,14 @@ export default class Aksharamukha {
 			const fs = await import('fs');
 			for (const wheel of wheels) {
 				let wheelData: Buffer<ArrayBuffer>;
+				const currentDir = getCurrentDir()
 
 				try {
-					const wheelPath = `${__dirname}/${wheel}`;
+					const wheelPath = `${currentDir}/${wheel}`;
 					wheelData = fs.readFileSync(wheelPath);
 				} catch (e) {
 					console.warn(`Wheel file missing in script directory, trying ../../downloads: ${e}`);
-					const wheelPath = `${__dirname}/../../downloads/${wheel}`;
+					const wheelPath = `${currentDir}/../../downloads/${wheel}`;
 					wheelData = fs.readFileSync(wheelPath);
 				}
 
@@ -169,4 +170,16 @@ function buildCMD(props: processProps) {
 			post_options=${JSON.stringify(props.props.postOptions)}
 		)
 	`
+}
+
+function getCurrentDir(): string {
+	if (!isNode) {
+		throw new Error('getCurrentDir is only supported in Node.js environment.');
+	}
+
+	try {
+		return __dirname;
+	} catch {
+		return import.meta.dirname;
+	}
 }

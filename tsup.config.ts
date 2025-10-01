@@ -9,6 +9,12 @@ export default defineConfig({
 	minify: true,
 	clean: true,
 	esbuildOptions: options => {
+		if (options.format !== 'esm') {
+			options.logOverride = {
+				'empty-import-meta': 'silent'
+			};
+		}
+		
 		if (options.format === 'iife') {
 			// Add currentScript reference and window.Aksharamukha point to the default export
 			options.footer = {
