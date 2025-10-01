@@ -2,7 +2,7 @@
 *
 
 # Include only the essential files
-!/dist/
+!/dist/*
 !/package*.json
 !/README.md
 !/LICENCE
