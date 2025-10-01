@@ -46,7 +46,7 @@ export default class Aksharamukha {
 		this.pyodide = pyodide;
 	}
 
-	public static setCurrentScript(script: HTMLScriptElement) {
+	public static _setCurrentScript(script: HTMLScriptElement) {
 		this._currentScript = script;
 	}
 
