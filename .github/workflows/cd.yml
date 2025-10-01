@@ -65,22 +65,16 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Build package
-        run: npm run build
-
       - name: Update version and create tag
         run: |
           NEW_VERSION="${{ steps.version.outputs.new_version }}"
-
-          # Update package.json version
           npm version $NEW_VERSION --no-git-tag-version
 
-          # Commit the version change
-          git add package.json package-lock.json
-          git commit -m "chore: bump version to $NEW_VERSION"
+      - name: Build package
+        run: npm run build
 
-          # Create and push tag
-          git tag "v$NEW_VERSION"
+      - name: Push tag and version commit
+        run: |
           git push origin main
           git push origin "v$NEW_VERSION"
 
