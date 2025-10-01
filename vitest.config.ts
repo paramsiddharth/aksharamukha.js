@@ -18,7 +18,6 @@ export default defineConfig({
 			]
 		},
 		testTimeout: 60000,
-		setupFiles: ['./setup-tests.ts'],
 	},
 	// Might be needed later.
 	/* server: {
