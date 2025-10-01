@@ -17,7 +17,7 @@ for (const wheel of wheels) {
 				resp.data.pipe(downloadStream);
 
 				downloadStream.on('error', (error: unknown) => reject(error));
-				downloadStream.on('close', () => resolve(null));
+				downloadStream.on('finish', () => resolve(null));
 			}).catch((err) => reject(err));
 		});
 	} catch (e) {
