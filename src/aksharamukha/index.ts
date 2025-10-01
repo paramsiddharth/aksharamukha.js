@@ -65,6 +65,7 @@ export default class Aksharamukha {
 
 		if (isNode) {
 			const fs = await import('fs');
+
 			for (const wheel of wheels) {
 				let wheelData: Buffer<ArrayBuffer>;
 				const currentDir = getCurrentDir()
@@ -79,18 +80,20 @@ export default class Aksharamukha {
 				}
 
 				pyodide.FS.writeFile(`/tmp/${wheel}`, wheelData);
-				await micropip.install(`emfs:/tmp/${wheel}`, { keep_going: true });
+			}
+
+			await micropip.install(wheels.map(wheel => `emfs:/tmp/${wheel}`), { keep_going: true });
+
+			for (const wheel of wheels) {
 				pyodide.FS.unlink(`/tmp/${wheel}`);
 			}
 		} else {
-			for (const wheel of wheels) {
-				try {
-					const scriptPath = this._currentScript.src;
-					const parentPath = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
-					await micropip.install(`${parentPath}/${wheel}`, { keep_going: true })
-				} catch {
-					await micropip.install(`${wheelBaseURL}/${wheel}`, { keep_going: true })
-				}
+			try {
+				const scriptPath = this._currentScript.src;
+				const parentPath = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
+				await micropip.install(wheels.map(wheel => `${parentPath}/${wheel}`), { keep_going: true })
+			} catch {
+				await micropip.install(wheels.map(wheel => `${wheelBaseURL}/${wheel}`), { keep_going: true })
 			}
 		}
 
