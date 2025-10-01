@@ -11,7 +11,6 @@ for (const wheel of wheels) {
 	const options = { directory: './downloads', filename: wheel };
 	console.log(`Downloading ${wheel}...`);
 	try {
-		// await wget(url, { output: `./downloads/${options.filename}` });
 		await new Promise((resolve, reject) => {
 			axios.get(url, { responseType: 'stream' }).then((resp) => {
 				const downloadStream = fs.createWriteStream(`./downloads/${options.filename}`);
