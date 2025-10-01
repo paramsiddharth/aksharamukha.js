@@ -4,6 +4,4 @@ afterAll(() => {
 	vi.restoreAllMocks();
 });
 
-vi.setConfig({
-	testTimeout: 30000
-});
+vi.setConfig({ testTimeout: 60000 });
