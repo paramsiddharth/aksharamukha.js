@@ -87,11 +87,27 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Pack npm package
+        run: |
+          npm pack
+          echo "package_file=$(ls *.tgz)" >> $GITHUB_OUTPUT
+        id: package
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.version.outputs.new_version }}
           name: Release v${{ steps.version.outputs.new_version }}
-          body: Automated release v${{ steps.version.outputs.new_version }}.
+          body: |
+            # Automated release v${{ steps.version.outputs.new_version }}
+            
+            ## 📦 Package
+            This release includes the package that was published to the NPM registry.
+            
+            ## 🚀 Installation
+            ```bash
+            npm i aksharamukha@${{ steps.version.outputs.new_version }}
+            ```
+          files: ${{ steps.package.outputs.package_file }}
           draft: false
           prerelease: false
