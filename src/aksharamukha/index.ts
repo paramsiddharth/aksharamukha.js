@@ -40,6 +40,9 @@ export type AksharamukhaInitOptions = {
 export default class Aksharamukha {
 	static _isTestEnv: boolean = false;
 	static _currentScript: HTMLScriptElement;
+	static _pyodidePromise: Promise<PyodideInterface> | null = null;
+	static _packagesInstalled: boolean = false;
+
 	pyodide: PyodideInterface;
 
 	private constructor(pyodide: PyodideInterface) {
@@ -50,54 +53,67 @@ export default class Aksharamukha {
 		this._currentScript = script;
 	}
 
-	public static async new(opts?: AksharamukhaInitOptions): Promise<Aksharamukha> {
-		let pyodide = opts?.pyodide;
-		if (pyodide == null) {
-			if (this._isTestEnv) {
-				pyodide = await loadTestPyodide();
-			} else {
-				pyodide = await loadPyodide();
-			}
-		}
-
-		await pyodide.loadPackage('micropip');
-		const micropip = pyodide.pyimport('micropip');
-
-		if (isNode) {
-			const fs = await import('fs');
-
-			for (const wheel of wheels) {
-				let wheelData: Buffer<ArrayBuffer>;
-				const currentDir = getCurrentDir()
-
-				try {
-					const wheelPath = `${currentDir}/${wheel}`;
-					wheelData = fs.readFileSync(wheelPath);
-				} catch (e) {
-					console.warn(`Wheel file missing in script directory, trying ../../downloads: ${e}`);
-					const wheelPath = `${currentDir}/../../downloads/${wheel}`;
-					wheelData = fs.readFileSync(wheelPath);
+	// Lazy-load Pyodide
+	private static async getPyodide(): Promise<PyodideInterface> {
+		if (!this._pyodidePromise) {
+			this._pyodidePromise = (async () => {
+				let pyodide: PyodideInterface;
+				if (this._isTestEnv) {
+					pyodide = await loadTestPyodide();
+				} else {
+					pyodide = await loadPyodide();
 				}
 
-				pyodide.FS.writeFile(`/tmp/${wheel}`, wheelData);
-			}
+				await pyodide.loadPackage('micropip');
+				const micropip = pyodide.pyimport('micropip');
 
-			await micropip.install(wheels.map(wheel => `emfs:/tmp/${wheel}`), { keep_going: true });
+				if (isNode) {
+					const fs = await import('fs');
+					const currentDir = getCurrentDir();
 
-			for (const wheel of wheels) {
-				pyodide.FS.unlink(`/tmp/${wheel}`);
-			}
-		} else {
-			try {
-				const scriptPath = this._currentScript.src;
-				const parentPath = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
-				await micropip.install(wheels.map(wheel => `${parentPath}/${wheel}`), { keep_going: true })
-			} catch {
-				await micropip.install(wheels.map(wheel => `${wheelBaseURL}/${wheel}`), { keep_going: true })
-			}
+					for (const wheel of wheels) {
+						let wheelData: Buffer;
+						try {
+							wheelData = fs.readFileSync(`${currentDir}/${wheel}`);
+						} catch {
+							wheelData = fs.readFileSync(`${currentDir}/../../downloads/${wheel}`);
+						}
+						pyodide.FS.writeFile(`/tmp/${wheel}`, wheelData);
+					}
+
+					if (!this._packagesInstalled) {
+						await micropip.install(wheels.map(wheel => `emfs:/tmp/${wheel}`), { keep_going: true });
+						this._packagesInstalled = true;
+					}
+
+					for (const wheel of wheels) {
+						pyodide.FS.unlink(`/tmp/${wheel}`);
+					}
+				} else {
+					if (!this._packagesInstalled) {
+						try {
+							const scriptPath = this._currentScript.src;
+							const parentPath = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
+							await micropip.install(wheels.map(wheel => `${parentPath}/${wheel}`), { keep_going: true });
+						} catch {
+							await micropip.install(wheels.map(wheel => `${wheelBaseURL}/${wheel}`), { keep_going: true });
+						}
+						this._packagesInstalled = true;
+					}
+				}
+
+				// Pre-import transliterate function for faster calls
+				await pyodide.runPython(`from aksharamukha import transliterate\n_process = transliterate.process`);
+				// Warm up Pyodide WASM engine
+				await pyodide.runPythonAsync(`1 + 1`);
+				return pyodide;
+			})();
 		}
+		return this._pyodidePromise;
+	}
 
-		pyodide.runPython(`from aksharamukha import *`); // Pre-import to speed up further calls
+	public static async new(opts?: AksharamukhaInitOptions): Promise<Aksharamukha> {
+		const pyodide = opts?.pyodide ?? await this.getPyodide();
 		return new Aksharamukha(pyodide);
 	}
 
@@ -144,6 +160,7 @@ export default class Aksharamukha {
 			postOptions
 		}: ProcessProps = defaultProcessProps
 	) {
+		const pyodide = this.pyodide ?? (this.pyodide = await Aksharamukha.getPyodide());
 		const cmd = buildCMD({
 			src,
 			tgt,
@@ -155,7 +172,7 @@ export default class Aksharamukha {
 				postOptions: postOptions ?? defaultProcessProps.postOptions
 			}
 		});
-		return await this.pyodide.runPythonAsync(cmd);
+		return await pyodide.runPythonAsync(cmd);
 	}
 }
 
@@ -163,13 +180,12 @@ async function loadTestPyodide(): Promise<PyodideInterface> {
 	return await loadPyodide({
 		indexURL: './node_modules/pyodide',
 		packageCacheDir: './node_modules/pyodide'
-	})
+	});
 }
 
 function buildCMD(props: ProcessArgs) {
 	return `
-		from aksharamukha import transliterate
-		transliterate.process(
+		_process(
 			${JSON.stringify(props.src)},
 			${JSON.stringify(props.tgt)},
 			${JSON.stringify(props.txt)},
@@ -178,14 +194,11 @@ function buildCMD(props: ProcessArgs) {
 			pre_options=${JSON.stringify(props.props.preOptions)},
 			post_options=${JSON.stringify(props.props.postOptions)}
 		)
-	`
+	`;
 }
 
 function getCurrentDir(): string {
-	if (!isNode) {
-		throw new Error('getCurrentDir is only supported in Node.js environment.');
-	}
-
+	if (!isNode) throw new Error('getCurrentDir is only supported in Node.js environment.');
 	try {
 		return __dirname;
 	} catch {

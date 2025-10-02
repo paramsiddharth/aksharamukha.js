@@ -1,26 +1,49 @@
 import axios from 'axios';
 import fs from 'fs-extra';
-
 import { wheelBaseURL, wheels } from './constants';
 
-fs.ensureDirSync('./downloads');
-for (const wheel of wheels) {
-	const url = `${wheelBaseURL}/${wheel}`;
-	const options = { directory: './downloads', filename: wheel };
-	console.log(`Downloading ${wheel}...`);
-	try {
-		await new Promise((resolve, reject) => {
-			axios.get(url, { responseType: 'stream' }).then((resp) => {
-				const downloadStream = fs.createWriteStream(`./downloads/${options.filename}`);
-				resp.data.pipe(downloadStream);
+async function downloadWheels() {
+    // Ensure downloads directory exists
+    await fs.ensureDir('./downloads');
 
-				downloadStream.on('error', (error: unknown) => reject(error));
-				downloadStream.on('finish', () => resolve(null));
-			}).catch((err) => reject(err));
-		});
-	} catch (e) {
-		console.error(`Failed to download ${wheel}:`, e);
-		process.exit(1);
-	}
-	console.log(`Downloaded ${wheel} to ${options.directory}/${options.filename}.`);
+    // Download all wheels in parallel
+    await Promise.all(
+        wheels.map(async (wheel) => {
+            const filePath = `./downloads/${wheel}`;
+
+            // Skip download if file already exists
+            if (await fs.pathExists(filePath)) {
+                console.log(`${wheel} already exists. Skipping download.`);
+                return;
+            }
+
+            const url = `${wheelBaseURL}/${wheel}`;
+            console.log(`Downloading ${wheel} from ${url}...`);
+
+            try {
+                const resp = await axios.get(url, { responseType: 'stream' });
+                const writer = fs.createWriteStream(filePath);
+
+                resp.data.pipe(writer);
+
+                await new Promise<void>((resolve, reject) => {
+                    writer.on('finish', () => resolve());
+                    writer.on('error', (err) => reject(err));
+                });
+
+                console.log(`Downloaded ${wheel} to ${filePath}.`);
+            } catch (e) {
+                console.error(`Failed to download ${wheel}:`, e);
+                process.exit(1);
+            }
+        })
+    );
+
+    console.log('All wheels downloaded successfully.');
 }
+
+// Run the download function
+downloadWheels().catch((err) => {
+    console.error('Unexpected error during wheel download:', err);
+    process.exit(1);
+});
