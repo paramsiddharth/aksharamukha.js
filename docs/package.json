@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-	"deploy": "gh-pages -td out"
+    "deploy": "gh-pages -td out"
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.2.6",
