@@ -36,7 +36,7 @@ export default function QuickStartSection() {
 							Quick Start
 						</h2>
 						<p className="text-xl text-muted-foreground font-sans mb-6">
-							Get up and running in seconds
+							Get up and running in seconds!
 						</p>
 					</div>
 

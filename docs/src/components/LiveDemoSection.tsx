@@ -14,7 +14,7 @@ import { Copy, Check, Shuffle, ArrowRightLeft } from "lucide-react";
 declare global {
 	interface Window {
 		aksharamukha?: {
-			convert: (
+			process: (
 				text: string,
 				fromScript: string,
 				toScript: string
@@ -24,25 +24,26 @@ declare global {
 }
 
 const scripts = [
-	{ value: "Devanagari", label: "देवनागरी (Devanagari)", example: "प्रणाम्" },
-	{ value: "Tamil", label: "தமிழ் (Tamil)", example: "வணக்கம்" },
-	{ value: "Kannada", label: "ಕನ್ನಡ (Kannada)", example: "ನಮಸ್ಕಾರ" },
-	{ value: "Telugu", label: "తెలుగు (Telugu)", example: "నమస్కారం" },
-	{ value: "Malayalam", label: "മലയാളം (Malayalam)", example: "നമസ്കാരം" },
-	{ value: "Bengali", label: "বাংলা (Bengali)", example: "নমস্কার" },
-	{ value: "Gujarati", label: "ગુજરાતી (Gujarati)", example: "નમસ્કાર" },
-	{ value: "Gurmukhi", label: "ਗੁਰਮੁਖੀ (Gurmukhi)", example: "ਸਤ ਸ੍ਰੀ ਅਕਾਲ" },
-	{ value: "Oriya", label: "ଓଡ଼ିଆ (Oriya)", example: "ନମସ୍କାର" },
-	{ value: "ISO", label: "Latin (ISO)", example: "namaskara" },
+	{ code: 'kaithi', value: "Kaithi", label: "𑂍𑂶𑂟𑂲 (Kaithi)", example: "𑂣𑂹𑂩𑂝𑂰𑂧𑂹" },
+	{ code: 'devanagari', value: "Devanagari", label: "देवनागरी (Devanagari)", example: "प्रणाम्" },
+	{ code: 'tamil', value: "Tamil", label: "தமிழ் (Tamil)", example: "வணக்கம்" },
+	{ code: 'kannada', value: "Kannada", label: "ಕನ್ನಡ (Kannada)", example: "ನಮಸ್ಕಾರ" },
+	{ code: 'telugu', value: "Telugu", label: "తెలుగు (Telugu)", example: "నమస్కారం" },
+	{ code: 'malayalam', value: "Malayalam", label: "മലയാളം (Malayalam)", example: "നമസ്കാരം" },
+	{ code: 'bengali', value: "Bengali", label: "বাংলা (Bengali)", example: "নমস্কার" },
+	{ code: 'gujarati', value: "Gujarati", label: "ગુજરાતી (Gujarati)", example: "નમસ્કાર" },
+	{ code: 'gurmukhi', value: "Gurmukhi", label: "ਗੁਰਮੁਖੀ (Gurmukhi)", example: "ਸਤ ਸ੍ਰੀ ਅਕਾਲ" },
+	{ code: 'oriya', value: "Oriya", label: "ଓଡ଼ିଆ (Oriya)", example: "ନମସ୍କାର" },
+	{ code: 'itrans', value: "ITRANS", label: "Latin (ITRANS)", example: "namaskara" },
 ];
 
 const sampleTexts = [
-	{ text: "namaste", description: "Sanskrit greeting" },
-	{ text: "dhanyavaada", description: "Thank you" },
-	{ text: "shubha raatri", description: "Good night" },
-	{ text: "praNAm", description: "Respectful greeting" },
-	{ text: "svaagatam", description: "Welcome" },
-	{ text: "kshama kariye", description: "Excuse me" },
+	"namaste",
+	"dhanyavaada",
+	"shubha raatri",
+	"praNAm",
+	"svaagatam",
+	"kShamaa karie",
 ];
 
 interface LiveDemoSectionProps {
@@ -52,8 +53,8 @@ interface LiveDemoSectionProps {
 export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 	const [inputText, setInputText] = useState("praNAm.");
 	const [outputText, setOutputText] = useState("");
-	const [fromScript, setFromScript] = useState("ISO");
-	const [toScript, setToScript] = useState("Devanagari");
+	const [fromScript, setFromScript] = useState("itrans");
+	const [toScript, setToScript] = useState("kaithi");
 	const [copied, setCopied] = useState(false);
 	const [isConverting, setIsConverting] = useState(false);
 
@@ -67,7 +68,7 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 	const generateRandomText = useCallback(() => {
 		const randomSample =
 			sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
-		setInputText(randomSample.text);
+		setInputText(randomSample);
 	}, []);
 
 	useEffect(() => {
@@ -75,10 +76,10 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 			setIsConverting(true);
 			const timeoutId = setTimeout(async () => {
 				try {
-					const result = await window.aksharamukha?.convert(
-						inputText,
+					const result = await window.aksharamukha?.process(
 						fromScript,
-						toScript
+						toScript,
+						inputText
 					);
 					setOutputText(result || "");
 				} catch {
@@ -174,7 +175,7 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 											{scripts.map((script) => (
 												<SelectItem
 													key={script.value}
-													value={script.value}
+													value={script.code}
 													className="hover:bg-teal-50/80 dark:hover:bg-teal-950/50"
 												>
 													<div className="flex items-center gap-2">
@@ -242,7 +243,7 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 											{scripts.map((script) => (
 												<SelectItem
 													key={script.value}
-													value={script.value}
+													value={script.code}
 													className="hover:bg-teal-50/80 dark:hover:bg-teal-950/50"
 												>
 													<div className="flex items-center gap-2">

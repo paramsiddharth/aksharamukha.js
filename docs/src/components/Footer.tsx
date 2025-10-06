@@ -17,7 +17,7 @@ export default function Footer() {
 							<p className="text-muted-foreground font-sans leading-relaxed mb-6">
 								A powerful, browser-compatible transliteration
 								library for Indic scripts. Convert text between
-								40+ writing systems instantly, with complete
+								100+ writing systems instantly, with complete
 								privacy and offline capability.
 							</p>
 							<div className="flex flex-wrap gap-3">
@@ -29,7 +29,6 @@ export default function Footer() {
 									<a
 										href="https://github.com/paramsiddharth/aksharamukha.js"
 										target="_blank"
-										rel="noopener noreferrer"
 									>
 										<Github className="mr-2 h-4 w-4" />
 										Star on GitHub
@@ -56,29 +55,26 @@ export default function Footer() {
 									<a
 										href="https://www.aksharamukha.com/converter"
 										target="_blank"
-										rel="noopener noreferrer"
 										className="flex items-center gap-2 text-muted-foreground hover:text-teal-700 dark:hover:text-teal-400 transition-colors"
 									>
 										<Globe className="h-4 w-4" />
-										Original Aksharamukha
+										Aksharamukha
 									</a>
 								</li>
 								<li>
 									<a
-										href="https://github.com/virtualvinodh/aksharamukha"
+										href="https://github.com/virtualvinodh/aksharamukha-python"
 										target="_blank"
-										rel="noopener noreferrer"
 										className="flex items-center gap-2 text-muted-foreground hover:text-teal-700 dark:hover:text-teal-400 transition-colors"
 									>
 										<Code2 className="h-4 w-4" />
-										Source Engine
+										Engine
 									</a>
 								</li>
 								<li>
 									<a
 										href="https://github.com/paramsiddharth/aksharamukha.js/blob/main/README.md"
 										target="_blank"
-										rel="noopener noreferrer"
 										className="flex items-center gap-2 text-muted-foreground hover:text-teal-700 dark:hover:text-teal-400 transition-colors"
 									>
 										<BookOpen className="h-4 w-4" />
@@ -97,7 +93,7 @@ export default function Footer() {
 								<Card className="p-3 border-teal-200/50 dark:border-teal-800/40 bg-white/50 dark:bg-card/50">
 									<div className="text-sm font-sans">
 										<div className="text-teal-700 dark:text-teal-400 font-semibold mb-1">
-											40+ Scripts
+											100+ Scripts
 										</div>
 										<div className="text-muted-foreground text-xs">
 											Comprehensive support for Indic
@@ -111,7 +107,7 @@ export default function Footer() {
 											100% Offline
 										</div>
 										<div className="text-muted-foreground text-xs">
-											No server required, complete privacy
+											No server required, entirely in the browser
 										</div>
 									</div>
 								</Card>
@@ -130,17 +126,24 @@ export default function Footer() {
 								<a
 									href="https://www.aksharamukha.com/converter"
 									target="_blank"
-									rel="noopener noreferrer"
 									className="font-semibold text-teal-700 dark:text-teal-400 transition-colors hover:text-teal-800 dark:hover:text-teal-300 underline decoration-teal-300 dark:decoration-teal-700 underline-offset-4"
 								>
 									Aksharamukha
 								</a>{" "}
-								by Vinodh Rajan
+								by <a href="http://virtualvinodh.com/" target="_blank" className="font-semibold text-teal-700 dark:text-teal-400 transition-colors hover:text-teal-800 dark:hover:text-teal-300 underline decoration-teal-300 dark:decoration-teal-700 underline-offset-4">Vinodh Rajan</a>.
 							</p>
 							<p className="text-xs text-muted-foreground/75 font-sans">
 								Made with{" "}
 								<Heart className="inline h-3 w-3 text-red-500" />{" "}
-								for the preservation of Indic scripts
+								by{" "}
+								<a
+									href="https://www.paramsid.com"
+									target="_blank"
+									className="font-semibold text-teal-700 dark:text-teal-400 transition-colors hover:text-teal-800 dark:hover:text-teal-300 underline decoration-teal-300 dark:decoration-teal-700 underline-offset-4"
+								>
+									Param
+								</a>,{" "}
+								for the preservation of Indic scripts.
 							</p>
 						</div>
 					</div>

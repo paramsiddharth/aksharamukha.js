@@ -47,11 +47,11 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 						</div>
 						<div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/50 dark:border-cyan-700/50 bg-cyan-100/60 dark:bg-cyan-900/30 px-4 py-2 text-sm font-medium text-cyan-700 dark:text-cyan-300 shadow-sm font-sans">
 							<Globe className="h-4 w-4" />
-							40+ Scripts Supported
+							100+ Scripts Supported
 						</div>
 						<div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/50 dark:border-emerald-700/50 bg-emerald-100/60 dark:bg-emerald-900/30 px-4 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-300 shadow-sm font-sans">
 							<Zap className="h-4 w-4" />
-							Lightning Fast
+							Robust
 						</div>
 					</div>
 
@@ -61,8 +61,8 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 							Aksharamukha.js
 						</h1>
 						<p className="mb-4 text-pretty text-xl text-muted-foreground sm:text-2xl leading-relaxed font-normal font-sans max-w-4xl mx-auto">
-							Transliterate between 40+ Indic scripts — instantly,
-							accurately, and completely offline in your browser
+							Transliterate text between 40+ Indic scripts — instantly,
+							accurately, and completely offline in your browser.
 						</p>
 
 						{/* Enhanced description */}
@@ -92,7 +92,6 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 								<a
 									href="https://github.com/paramsiddharth/aksharamukha.js"
 									target="_blank"
-									rel="noopener noreferrer"
 								>
 									<Github className="mr-2 h-4 w-4" />
 									View on GitHub

@@ -76,8 +76,7 @@ export default function AboutSection() {
 								Production Ready
 							</h3>
 							<p className="text-sm text-muted-foreground font-sans leading-relaxed">
-								Based on the proven Aksharamukha engine, trusted
-								by thousands of users.
+								Uses the versatile Aksharamukha PyPI library.
 							</p>
 						</div>
 					</div>
