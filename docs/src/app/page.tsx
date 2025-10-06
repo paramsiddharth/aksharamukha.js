@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 
 declare global {
 	interface Window {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		Aksharamukha?: any;
 	}
 }
@@ -24,6 +25,7 @@ export default function AksharamukhaPage() {
 		script.async = true;
 		script.onload = () => {
 			window.Aksharamukha.new()
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			.then((aksharamukha: any) => {
 				window.aksharamukha = aksharamukha;
 				setIsLoaded(true);
