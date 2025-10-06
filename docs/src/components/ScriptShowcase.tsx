@@ -79,7 +79,7 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 					ex.source
 				);
 				setConverted(out && out.trim());
-			} catch (e: any) {
+			} catch (e: unknown) {
 				setConverted(ex.expected);
 				console.error("Error during conversion:", e);
 				setInError(true);

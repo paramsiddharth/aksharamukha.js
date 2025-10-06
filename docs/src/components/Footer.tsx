@@ -143,7 +143,7 @@ export default function Footer() {
 								>
 									Param
 								</a>,{" "}
-								for the preservation of Indic scripts.
+								for the preservation and glory of Indic scripts.
 							</p>
 						</div>
 					</div>
