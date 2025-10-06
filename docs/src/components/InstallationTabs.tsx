@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, Play } from "lucide-react";
+import { Check, Copy, Play, Package, Download } from "lucide-react";
 
 const installMethods = [
 	{
@@ -28,6 +28,82 @@ const installMethods = [
 	</script>
 </body>
 </html>`,
+	},
+	{
+		id: "npm",
+		label: "NPM",
+		icon: <Package className="w-4 h-4" />,
+		description: "Install via npm package manager",
+		code: `# Install the package
+npm install aksharamukha
+
+# Usage in your project
+import { Aksharamukha } from 'aksharamukha';
+
+const aksharamukha = await Aksharamukha.new();
+const result = await aksharamukha.process(
+  'autodetect',
+  'Devanagari', 
+  'praNAm.'
+);
+console.log(result); // प्रणाम्`,
+	},
+	{
+		id: "pnpm",
+		label: "PNPM",
+		icon: <Package className="w-4 h-4" />,
+		description: "Install using PNPM package manager",
+		code: `# Install the package
+pnpm add aksharamukha
+
+# Usage in your project
+import { Aksharamukha } from 'aksharamukha';
+
+const aksharamukha = await Aksharamukha.new();
+const result = await aksharamukha.process(
+  'ISO',
+  'Tamil',
+  'vanakkam'
+);
+console.log(result); // வணக்கம்`,
+	},
+	{
+		id: "yarn",
+		label: "Yarn",
+		icon: <Package className="w-4 h-4" />,
+		description: "Install using Yarn package manager",
+		code: `# Install the package
+yarn add aksharamukha
+
+# Usage in your project
+import { Aksharamukha } from 'aksharamukha';
+
+const aksharamukha = await Aksharamukha.new();
+const result = await aksharamukha.process(
+  'ISO',
+  'Bengali',
+  'dhanyabad'
+);
+console.log(result); // ধন্যবাদ`,
+	},
+	{
+		id: "bun",
+		label: "Bun",
+		icon: <Download className="w-4 h-4" />,
+		description: "Install using Bun package manager",
+		code: `# Install the package
+bun add aksharamukha
+
+# Usage in your project
+import { Aksharamukha } from 'aksharamukha';
+
+const aksharamukha = await Aksharamukha.new();
+const result = await aksharamukha.process(
+  'ISO',
+  'Kannada',
+  'namaskara'
+);
+console.log(result); // ನಮಸ್ಕಾರ`,
 	},
 ];
 

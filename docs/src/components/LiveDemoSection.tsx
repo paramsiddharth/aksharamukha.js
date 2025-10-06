@@ -14,7 +14,11 @@ import { Copy, Check, Shuffle, ArrowRightLeft } from "lucide-react";
 declare global {
 	interface Window {
 		aksharamukha?: {
-			convert: (text: string, from: string, to: string) => string;
+			convert: (
+				text: string,
+				fromScript: string,
+				toScript: string
+			) => Promise<string>;
 		};
 	}
 }
@@ -69,9 +73,9 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 	useEffect(() => {
 		if (isLoaded && window.aksharamukha && inputText) {
 			setIsConverting(true);
-			const timeoutId = setTimeout(() => {
+			const timeoutId = setTimeout(async () => {
 				try {
-					const result = window.aksharamukha?.convert(
+					const result = await window.aksharamukha?.convert(
 						inputText,
 						fromScript,
 						toScript
@@ -96,7 +100,7 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 
 	return (
 		<section
-			id="live-demo"
+			id="demo"
 			className="min-h-screen flex items-center justify-center border-b border-gray-200/30 dark:border-gray-700/30 bg-gradient-to-b from-teal-50/30 to-background dark:from-teal-950/10 dark:to-background relative overflow-hidden"
 		>
 			{/* Animated background elements */}
