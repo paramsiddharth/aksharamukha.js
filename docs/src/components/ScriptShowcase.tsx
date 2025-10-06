@@ -5,10 +5,10 @@ import React, { useEffect, useState } from "react";
 declare global {
 	interface Window {
 		aksharamukha?: {
-			convert: (
-				text: string,
-				fromScript: string,
-				toScript: string
+			process: (
+				from: string,
+				to: string,
+				text: string
 			) => Promise<string>;
 		};
 	}
@@ -18,6 +18,8 @@ type Example = {
 	label: string; // short label like "ITRANS → Telugu"
 	fromScript: string;
 	toScript: string;
+	from: string;
+	to: string;
 	source: string;
 	expected: string;
 };
@@ -27,6 +29,8 @@ const EXAMPLES: Example[] = [
 		label: "ITRANS → Telugu",
 		fromScript: "ITRANS",
 		toScript: "Telugu",
+		from: 'itrans',
+		to: 'telugu',
 		source: "rAma",
 		expected: "రామ",
 	},
@@ -34,6 +38,8 @@ const EXAMPLES: Example[] = [
 		label: "Harvard-Kyoto → Siddham",
 		fromScript: "Harvard-Kyoto",
 		toScript: "Siddham",
+		from: 'hk',
+		to: 'siddham',
 		source: "buddhaH",
 		expected: "𑖤𑖲𑖟𑖿𑖠𑖾",
 	},
@@ -41,6 +47,8 @@ const EXAMPLES: Example[] = [
 		label: "Devanagari → Malayalam",
 		fromScript: "Devanagari",
 		toScript: "Malayalam",
+		from: 'devanagari',
+		to: 'malayalam',
 		source: "धर्म",
 		expected: "ധര്മ",
 	},
@@ -49,43 +57,39 @@ const EXAMPLES: Example[] = [
 export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 	const [index, setIndex] = useState<number>(0);
 	const [converted, setConverted] = useState<string>(EXAMPLES[0].expected);
-	const [loading, setLoading] = useState<boolean>(false);
-	const cycleInterval = 4000;
+	const [loading, setLoading] = useState<boolean>(true);
+	const [inError, setInError] = useState<boolean>(false);
+	const cycleInterval = 8000;
 
 	// perform conversion for the current example
 	useEffect(() => {
-		let mounted = true;
+		const ex = EXAMPLES[index];
+		setConverted(ex.expected);
+		setLoading(true);
+
 		async function doConvert() {
-			const ex = EXAMPLES[index];
-			// show expected immediately if not loaded to avoid blank UI
-			if (!isLoaded || !window?.aksharamukha?.convert) {
-				setConverted(ex.expected);
-				setLoading(false);
+			if (!isLoaded || !window?.aksharamukha?.process) {
 				return;
 			}
 
-			setLoading(true);
 			try {
-				const out = await window.aksharamukha!.convert(
-					ex.source,
-					ex.fromScript,
-					ex.toScript
+				const out = await window.aksharamukha!.process(
+					ex.from,
+					ex.to,
+					ex.source
 				);
-				if (!mounted) return;
-				// defensive: some conversions may return empty; fallback to expected
-				setConverted(out && out.trim().length > 0 ? out : ex.expected);
-			} catch {
-				// fallback to expected result on any failure
-				if (mounted) setConverted(ex.expected);
+				setConverted(out && out.trim());
+			} catch (e: any) {
+				setConverted(ex.expected);
+				console.error("Error during conversion:", e);
+				setInError(true);
 			} finally {
-				if (mounted) setLoading(false);
+				setLoading(false);
 			}
 		}
 
 		doConvert();
-		return () => {
-			mounted = false;
-		};
+		return () => {};
 	}, [index, isLoaded]);
 
 	useEffect(() => {
@@ -105,10 +109,10 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 		<div className="mt-16 max-w-4xl mx-auto px-4">
 			<div className="text-center mb-6">
 				<h3 className="text-2xl font-semibold text-foreground mb-2 font-sans">
-					Live Transliteration
+					Examples of Transliteration
 				</h3>
 				<p className="text-sm text-muted-foreground font-sans">
-					Examples from unit tests — automatic transliteration using
+					Examples of transliteration using
 					Aksharamukha.
 				</p>
 			</div>
@@ -133,7 +137,11 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 
 					{/* loading indicator */}
 					<div className="flex items-center gap-2">
-						{loading ? (
+						{inError ? (
+							<span className="text-xs text-red-600 dark:text-red-400 font-sans">
+								Error: Please report it on <a className="font-medium text-teal-600 dark:text-teal-300" href="https://github.com/paramsiddharth/aksharamukha.js/issues/new" target="_blank">GitHub</a>.
+							</span>
+						) : loading ? (
 							<span
 								className="inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-t-transparent border-teal-600 animate-spin"
 								aria-hidden
@@ -206,13 +214,15 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 							{loading ? (
 								<>
 									{/* subtle text while converting */}
-									<span className="opacity-70 text-sm text-muted-foreground font-sans mr-3">
-										Converting…
-									</span>
-									<span
-										className="inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-t-transparent border-teal-600 animate-spin"
-										aria-hidden
-									/>
+									<div className="text-2xl font-serif min-h-[3rem] flex items-center justify-center break-words">
+										<span className="opacity-70 text-sm text-muted-foreground font-sans mr-3">
+											Converting… ({converted})
+										</span>
+										<span
+											className="inline-flex items-center justify-center w-6 h-6 rounded-full border-2 border-t-transparent border-teal-600 animate-spin"
+											aria-hidden
+										/>
+									</div>
 								</>
 							) : (
 								<span>{converted}</span>
@@ -225,7 +235,7 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 								? "Aksharamukha not loaded — showing expected result."
 								: loading
 								? "Running conversion…"
-								: "Conversion result (falls back to expected on failure)."}
+								: "Conversion result."}
 						</div>
 					</div>
 				</div>

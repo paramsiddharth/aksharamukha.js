@@ -44,10 +44,10 @@ export default function ExamplesSection() {
 									<div className="text-emerald-700 dark:text-emerald-400 mb-1 break-all sm:break-normal">
 										&ldquo;vanakkam&rdquo; →
 										&ldquo;வணக்கம்&rdquo; →
-										&ldquo;ವಣಕ್ಕಮ್&rdquo;
+										&ldquo;وَنَکَّمْ&rdquo;
 									</div>
 									<div className="text-xs text-muted-foreground">
-										Latin → Tamil → Kannada
+										Latin → Tamil → Urdu
 									</div>
 								</div>
 							</div>

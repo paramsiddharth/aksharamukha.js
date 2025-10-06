@@ -8,6 +8,12 @@ import LiveDemoSection from "@/components/LiveDemoSection";
 import QuickStartSection from "@/components/QuickStartSection";
 import Footer from "@/components/Footer";
 
+declare global {
+	interface Window {
+		Aksharamukha?: any;
+	}
+}
+
 export default function AksharamukhaPage() {
 	const [isLoaded, setIsLoaded] = useState(false);
 
@@ -16,7 +22,13 @@ export default function AksharamukhaPage() {
 		script.src =
 			"https://cdn.jsdelivr.net/npm/aksharamukha@latest/dist/index.global.js";
 		script.async = true;
-		script.onload = () => setIsLoaded(true);
+		script.onload = () => {
+			window.Aksharamukha.new()
+			.then((aksharamukha: any) => {
+				window.aksharamukha = aksharamukha;
+				setIsLoaded(true);
+			});
+		};
 		document.body.appendChild(script);
 
 		return () => {

@@ -61,11 +61,11 @@ import { Aksharamukha } from 'aksharamukha';
 
 const aksharamukha = await Aksharamukha.new();
 const result = await aksharamukha.process(
-  'ISO',
-  'Tamil',
-  'vanakkam'
+  'autodetect',
+  'Devanagari', 
+  'praNAm.'
 );
-console.log(result); // வணக்கம்`,
+console.log(result); // प्रणाम्`,
 	},
 	{
 		id: "yarn",
@@ -80,11 +80,11 @@ import { Aksharamukha } from 'aksharamukha';
 
 const aksharamukha = await Aksharamukha.new();
 const result = await aksharamukha.process(
-  'ISO',
-  'Bengali',
-  'dhanyabad'
+  'autodetect',
+  'Devanagari', 
+  'praNAm.'
 );
-console.log(result); // ধন্যবাদ`,
+console.log(result); // प्रणाम्`,
 	},
 	{
 		id: "bun",
@@ -99,11 +99,11 @@ import { Aksharamukha } from 'aksharamukha';
 
 const aksharamukha = await Aksharamukha.new();
 const result = await aksharamukha.process(
-  'ISO',
-  'Kannada',
-  'namaskara'
+  'autodetect',
+  'Devanagari', 
+  'praNAm.'
 );
-console.log(result); // ನಮಸ್ಕಾರ`,
+console.log(result); // प्रणाम्`,
 	},
 ];
 
