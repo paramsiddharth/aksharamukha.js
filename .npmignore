@@ -1,0 +1,8 @@
+# Ignore everything by default
+*
+
+# Include only the essential files
+!/dist/*
+!/package*.json
+!/README.md
+!/LICENCE
