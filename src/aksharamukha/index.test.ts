@@ -82,6 +82,20 @@ describe('Aksharamukha', () => {
 					tgt: 'granthapandya',
 					txt: 'धर्म',
 					expected: 'ധര്മ'
+				},
+				{
+					description: 'should transliterate ITRANS to Tamil',
+					src: 'itrans',
+					tgt: 'tamil',
+					txt: 'vaNakkam',
+					expected: 'வணக்கம்'
+				},
+				{
+					description: 'should transliterate ITRANS to Tamil',
+					src: 'tamil',
+					tgt: 'urdu',
+					txt: 'வணக்கம்',
+					expected: 'وَنَکَّمْ'
 				}
 			];
 
@@ -298,6 +312,20 @@ describe('Aksharamukha', () => {
 					tgt: 'kannada',
 					txt: 'धर्म भारत की ',
 					expected: 'ಧರ್ಮ ಭಾರತ ಕೀ '
+				},
+				{
+					description: 'should transliterate English to Bengali with lang_name',
+					src: 'english',
+					tgt: 'bengali',
+					txt: 'namaste',
+					expected: 'নমস্তে'
+				},
+				{
+					description: 'should transliterate Bengali to Telugu with lang_name',
+					src: 'bengali',
+					tgt: 'telugu',
+					txt: 'নমস্তে',
+					expected: 'నమస్తే'
 				}
 			];
 
