@@ -133,7 +133,6 @@ jobs:
         with:
           node-version: 22
           cache: "npm"
-          registry-url: "https://registry.npmjs.org"
 
       - name: Configure git
         run: |
