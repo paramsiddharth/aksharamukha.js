@@ -114,7 +114,6 @@ jobs:
           files: ${{ steps.package.outputs.package_file }}
           draft: false
           prerelease: false
-  
   deploy:
     name: Deploy website
     runs-on: ubuntu-latest
