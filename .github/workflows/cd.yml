@@ -151,5 +151,7 @@ jobs:
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        working-directory: ./docs
-        run: npm run deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/out
