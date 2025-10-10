@@ -1,7 +1,7 @@
 # Aksharamukha.js
 Aksharamukha in your browser!
 
-!npm version
+![npm](https://img.shields.io/npm/v/aksharamukha)
 
 ## Description
 This project aspires to be a browser-compatible version of the [Aksharamukha](https://www.aksharamukha.com/) and its [Python library](https://github.com/virtualvinodh/aksharamukha-python), which is a transliteration tool for Indic scripts.
