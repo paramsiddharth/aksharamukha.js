@@ -1,6 +1,6 @@
 {
 	"name": "aksharamukha",
-	"version": "2.3.0-15",
+	"version": "2.3.0-16",
 	"type": "module",
 	"description": "Aksharamukha in your browser!",
 	"main": "dist/index.cjs",
