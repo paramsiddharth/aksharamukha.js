@@ -107,7 +107,7 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 							</div>
 							<div className="flex items-center gap-2">
 								<Globe className="h-4 w-4" />
-								<span>40+ scripts supported</span>
+								<span>100+ scripts supported</span>
 							</div>
 							<div className="flex items-center gap-2">
 								<Shield className="h-4 w-4" />
