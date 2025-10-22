@@ -60,7 +60,7 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 	const [converted, setConverted] = useState<string>(EXAMPLES[0].expected);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [inError, setInError] = useState<boolean>(false);
-	const cycleInterval = 8000;
+	const cycleInterval = 3000;
 
 	// perform conversion for the current example
 	useEffect(() => {
@@ -95,11 +95,7 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 		return () => {};
 	}, [
 		index,
-		isLoaded,
-		setConverted,
-		setFirstConversion,
-		setLoading,
-		setInError
+		isLoaded
 	]);
 
 	useEffect(() => {
@@ -111,7 +107,7 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 			setIndex((i) => (i + 1) % EXAMPLES.length);
 		}, cycleInterval);
 		return () => clearInterval(t);
-	}, [firstConversion, setIndex]);
+	}, [firstConversion]);
 
 	const goTo = (i: number) => {
 		setIndex(i);
