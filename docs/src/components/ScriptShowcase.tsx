@@ -56,6 +56,7 @@ const EXAMPLES: Example[] = [
 
 export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 	const [index, setIndex] = useState<number>(0);
+	const [firstConversion, setFirstConversion] = useState<boolean>(false);
 	const [converted, setConverted] = useState<string>(EXAMPLES[0].expected);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [inError, setInError] = useState<boolean>(false);
@@ -71,7 +72,7 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 			if (!isLoaded || !window?.aksharamukha?.process) {
 				return;
 			}
-
+			
 			try {
 				const out = await window.aksharamukha!.process(
 					ex.from,
@@ -79,8 +80,10 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 					ex.source
 				);
 				setConverted(out && out.trim());
+				setFirstConversion(true);
 			} catch (e: unknown) {
 				setConverted(ex.expected);
+				setFirstConversion(true);
 				console.error("Error during conversion:", e);
 				setInError(true);
 			} finally {
@@ -90,14 +93,25 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 
 		doConvert();
 		return () => {};
-	}, [index, isLoaded]);
+	}, [
+		index,
+		isLoaded,
+		setConverted,
+		setFirstConversion,
+		setLoading,
+		setInError
+	]);
 
 	useEffect(() => {
+		if (!firstConversion) {
+			return;
+		}
+
 		const t = setInterval(() => {
 			setIndex((i) => (i + 1) % EXAMPLES.length);
 		}, cycleInterval);
 		return () => clearInterval(t);
-	}, []);
+	}, [firstConversion, setIndex]);
 
 	const goTo = (i: number) => {
 		setIndex(i);
@@ -232,7 +246,7 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 						{/* small note about fallback */}
 						<div className="mt-2 text-xs text-muted-foreground font-sans">
 							{!isLoaded
-								? "Aksharamukha not loaded — showing expected result."
+								? "Loading Aksharamukha…"
 								: loading
 								? "Running conversion…"
 								: "Conversion result."}

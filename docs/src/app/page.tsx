@@ -46,7 +46,7 @@ export default function AksharamukhaPage() {
 		<div>
 			<HeroSection onGetStartedClick={scrollToDemo} />
 			<AboutSection />
-			<ExamplesSection />
+			<ExamplesSection isLoaded={isLoaded} />
 			<LiveDemoSection isLoaded={isLoaded} />
 			<QuickStartSection />
 			<Footer />
