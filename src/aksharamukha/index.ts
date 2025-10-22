@@ -97,8 +97,13 @@ export default class Aksharamukha {
 			}
 		}
 
-		pyodide.runPython(`from aksharamukha import *`); // Pre-import to speed up further calls
-		return new Aksharamukha(pyodide);
+		// Pre-import to speed up further calls
+		pyodide.runPython(`from aksharamukha import *`);
+		const instance = new Aksharamukha(pyodide);
+
+		// Pre-heat by doing the first process call
+		instance.process('autodetect', 'Devanagari', 'praNAm');
+		return instance;
 	}
 
 	public async test() {

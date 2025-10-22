@@ -15,8 +15,7 @@ You can use Aksharamukha.js directly in your HTML files by including it via a CD
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-	<title>Hi</title>
-	<script src='https://cdn.jsdelivr.net/npm/aksharamukha@latest/dist/index.global.js'></script>
+	<script src='https://cdn.jsdelivr.net/npm/aksharamukha/dist/index.global.js'></script>
 </head>
 <body>
 	<script type='module'>

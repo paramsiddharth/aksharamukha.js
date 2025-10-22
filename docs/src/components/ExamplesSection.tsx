@@ -1,6 +1,6 @@
 import ScriptShowcase from "./ScriptShowcase";
 
-export default function ExamplesSection() {
+export default function ExamplesSection({ isLoaded }: { isLoaded: boolean }) {
 	return (
 		<section className="min-h-screen flex items-center justify-center border-b border-gray-200/30 dark:border-gray-700/30 bg-gradient-to-b from-background to-teal-50/30 dark:to-teal-950/10 py-8 sm:py-16">
 			<div className="container mx-auto px-4 w-full">
@@ -53,7 +53,7 @@ export default function ExamplesSection() {
 							</div>
 						</div>
 					</div>
-					<ScriptShowcase isLoaded={true} />
+					<ScriptShowcase isLoaded={isLoaded} />
 				</div>
 			</div>
 		</section>
