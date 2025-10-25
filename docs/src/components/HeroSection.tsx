@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
 	Github,
 	ArrowRight,
@@ -37,6 +38,9 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 					కార
 				</div>
 			</div>
+				<div className="absolute top-4 right-4">
+					<ThemeToggle />
+				</div>
 			<div className="container relative mx-auto px-4">
 				<div className="mx-auto max-w-6xl">
 					{/* Top badges */}
