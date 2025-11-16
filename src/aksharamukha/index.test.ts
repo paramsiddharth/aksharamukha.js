@@ -343,4 +343,50 @@ describe('Aksharamukha', () => {
 			);
 		});
 	});
+
+	describe('Auto-detection', () => {
+		let instance: Aksharamukha;
+
+		beforeAll(async () => {
+			Aksharamukha._isTestEnv = true;
+			instance = await Aksharamukha.new();
+		});
+
+		afterAll(() => {
+			Aksharamukha._isTestEnv = false;
+		});
+
+		describe('Basic auto-detection tests', () => {
+			const autoDetectTests = [
+				{
+					description: 'should auto-detect Harvard-Kyoto',
+					txt: 'hello',
+					expected: 'HK'
+				},
+				{
+					description: 'should auto-detect Devanagari',
+					txt: 'नमस्कार',
+					expected: 'Devanagari'
+				},
+				{
+					description: 'should auto-detect Devanagari',
+					txt: 'дхарма бха̄рата кӣ',
+					expected: 'RussianCyrillic'
+				},
+				{
+					description: 'should auto-detect Arabic',
+					txt: 'وَنَکَّمْ',
+					expected: 'Arab'
+				}
+			];
+
+			it.each(autoDetectTests)(
+				'$description',
+				({ txt, expected }) => {
+					const result = instance.autoDetect(txt, false);
+					expect(result).toBe(expected);
+				}
+			);
+		});
+	});
 });
