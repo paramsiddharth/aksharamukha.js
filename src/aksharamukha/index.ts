@@ -10,6 +10,11 @@ export type ProcessArgs = {
 	props: ProcessProps
 };
 
+export type AutoDetectArgs = {
+	txt: string,
+	plugin: boolean
+};
+
 export type ProcessProps = {
 	nativize: boolean;
 	param: ProcessParam;
@@ -123,8 +128,8 @@ export default class Aksharamukha {
 			preOptions,
 			postOptions
 		}: ProcessProps = defaultProcessProps
-	) {
-		const cmd = buildCMD({
+	): string {
+		const cmd = buildProcessCMD({
 			src,
 			tgt,
 			txt,
@@ -148,8 +153,8 @@ export default class Aksharamukha {
 			preOptions,
 			postOptions
 		}: ProcessProps = defaultProcessProps
-	) {
-		const cmd = buildCMD({
+	): Promise<string> {
+		const cmd = buildProcessCMD({
 			src,
 			tgt,
 			txt,
@@ -162,6 +167,22 @@ export default class Aksharamukha {
 		});
 		return await this.pyodide.runPythonAsync(cmd);
 	}
+
+	public autoDetect(
+		txt: string,
+		plugin: boolean = false
+	): string {
+		const cmd = buildAutoDetectCMD({ txt, plugin });
+		return this.pyodide.runPython(cmd);
+	}
+
+	public autoDetectAsync(
+		txt: string,
+		plugin: boolean = false
+	): Promise<string> {
+		const cmd = buildAutoDetectCMD({ txt, plugin });
+		return this.pyodide.runPythonAsync(cmd);
+	}
 }
 
 async function loadTestPyodide(): Promise<PyodideInterface> {
@@ -171,7 +192,7 @@ async function loadTestPyodide(): Promise<PyodideInterface> {
 	})
 }
 
-function buildCMD(props: ProcessArgs) {
+function buildProcessCMD(props: ProcessArgs) {
 	return `
 		from aksharamukha import transliterate
 		transliterate.process(
@@ -182,6 +203,16 @@ function buildCMD(props: ProcessArgs) {
 			param=${JSON.stringify(props.props.param)},
 			pre_options=${JSON.stringify(props.props.preOptions)},
 			post_options=${JSON.stringify(props.props.postOptions)}
+		)
+	`
+}
+
+function buildAutoDetectCMD(props: AutoDetectArgs) {
+	return `
+		from aksharamukha import transliterate
+		transliterate.auto_detect(
+			${JSON.stringify(props.txt)},
+			${props.plugin ? 'True' : 'False'}
 		)
 	`
 }
