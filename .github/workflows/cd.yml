@@ -91,7 +91,7 @@ jobs:
           git push origin "v$NEW_VERSION"
 
       - name: Publish to npm
-        run: npm publish
+        run: npm publish --tag latest
 
       - name: Pack npm package
         run: |
