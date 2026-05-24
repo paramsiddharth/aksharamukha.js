@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write # Required for OIDC
 
 jobs:
   publish:
@@ -87,8 +88,6 @@ jobs:
 
       - name: Publish to npm
         run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Pack npm package
         run: |
