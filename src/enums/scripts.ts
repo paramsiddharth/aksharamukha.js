@@ -100,10 +100,11 @@ export enum ScriptIndic {
 
 export enum ScriptSemitic {
 	Arabic = 'Arab',
+	ArabicShahmukhi = 'Arab-Pa',
+	ArabicUrdu = 'Arab-Ur',
 	Elymaic = 'Elym',
 	EthiopicAbjad = 'Ethi',
 	Hatran = 'Hatr',
-	Hebrew = 'Hebr',
 	HebrewJudeoArabic = 'Hebr-Ar',
 	ImperialAramaic = 'Armi',
 	InscriptionalPahlavi = 'Phli',
@@ -118,14 +119,13 @@ export enum ScriptSemitic {
 	Phoenician = 'Phnx',
 	PsalterPahlavi = 'Phlp',
 	Samaritan = 'Samr',
-	Shahmukhi = 'Arab-Pa',
+	SemiticHebrew = 'Hebr',
+	SemiticThaanaDhivehi = 'Thaa',
 	Sogdian = 'Sogd',
 	SyriacEastern = 'Syrn',
 	SyriacEstrangela = 'Syre',
 	SyriacWestern = 'Syrj',
-	ThaanaDhivehi = 'Thaa',
 	Ugaritic = 'Ugar',
-	Urdu = 'Arab-Ur',
 }
 
 export enum ScriptLatin {

@@ -3,10 +3,10 @@ import { loadPyodide } from 'pyodide';
 
 import Aksharamukha, { ProcessParams } from '.';
 import {
-	ScriptIndic,
-	ScriptRomanization,
 	PreOption,
 	PostOption,
+	Scripts,
+	Script,
 } from '../enums';
 
 describe('Aksharamukha', () => {
@@ -67,39 +67,45 @@ describe('Aksharamukha', () => {
 
 		describe('Basic transliteration tests', () => {
 
-			const basicTests = [
+			const basicTests: {
+				description: string;
+				src: Script;
+				tgt: Script;
+				txt: string;
+				expected: string;
+			}[] = [
 				{
 					description: 'should transliterate ITRANS to Telugu',
-					src: 'itrans',
-					tgt: 'telugu', 
+					src: Scripts.ITRANS,
+					tgt: Scripts.Telugu, 
 					txt: 'rAma ##( test )## rAma',
 					expected: 'రామ ( test ) రామ'
 				},
 				{
 					description: 'should transliterate Harvard-Kyoto to Siddham',
-					src: 'hk',
-					tgt: 'siddham',
+					src: Scripts.HarvardKyoto,
+					tgt: Scripts.Siddham,
 					txt: 'buddhaH',
 					expected: '𑖤𑖲𑖟𑖿𑖠𑖾'
 				},
 				{
 					description: 'should transliterate Devanagari to Granthapandya',
-					src: 'devanagari',
-					tgt: 'granthapandya',
+					src: Scripts.Devanagari,
+					tgt: Scripts.GranthaPandya,
 					txt: 'धर्म',
 					expected: 'ധര്മ'
 				},
 				{
 					description: 'should transliterate ITRANS to Tamil',
-					src: 'itrans',
-					tgt: 'tamil',
+					src: Scripts.ITRANS,
+					tgt: Scripts.Tamil,
 					txt: 'vaNakkam',
 					expected: 'வணக்கம்'
 				},
 				{
-					description: 'should transliterate ITRANS to Tamil',
-					src: 'tamil',
-					tgt: 'urdu',
+					description: 'should transliterate Tamil to Urdu',
+					src: Scripts.Tamil,
+					tgt: Scripts.Urdu,
 					txt: 'வணக்கம்',
 					expected: 'وَنَکَّمْ'
 				}
@@ -120,11 +126,17 @@ describe('Aksharamukha', () => {
 		});
 
 		describe('Tests with nativize=false', () => {
-			const nativizeTests = [
+			const nativizeTests: {
+				description: string;
+				src: Script;
+				tgt: Script;
+				txt: string;
+				expected: string;
+			}[] = [
 				{
 					description: 'should transliterate HK to Tamil with nativize=false',
-					src: 'HK',
-					tgt: 'Tamil',
+					src: Scripts.HarvardKyoto,
+					tgt: Scripts.Tamil,
 					txt: 'maMgaLa',
 					expected: 'மம்ʼக³ள'
 				}
@@ -145,11 +157,18 @@ describe('Aksharamukha', () => {
 		});
 
 		describe('Tests with post-processing options', () => {
-			const postOptionsTests = [
+			const postOptionsTests: {
+				description: string;
+				src: Script;
+				tgt: Script;
+				txt: string;
+				postOptions: PostOption[];
+				expected: string;
+			}[] = [
 				{
 					description: 'should transliterate HK to Tamil with TamilSubScript and TamilRemoveApostrophe',
-					src: 'HK',
-					tgt: 'Tamil',
+					src: Scripts.HarvardKyoto,
+					tgt: Scripts.Tamil,
 					txt: 'bRhaspati gaMgA',
 					postOptions: [PostOption.TamilSubScript, PostOption.TamilRemoveApostrophe],
 					expected: 'ப்₃ருஹஸ்பதி க₃ம்கா₃'
@@ -171,19 +190,26 @@ describe('Aksharamukha', () => {
 		});
 
 		describe('Tests with pre-processing options', () => {
-			const preOptionsTests = [
+			const preOptionsTests: {
+				description: string;
+				src: Script;
+				tgt: Script;
+				txt: string;
+				preOptions: PreOption[];
+				expected: string;
+			}[] = [
 				{
 					description: 'should transliterate Thai to Devanagari with ThaiOrthography',
-					src: 'Thai',
-					tgt: 'Devanagari',
+					src: Scripts.Thai,
+					tgt: Scripts.Devanagari,
 					txt: 'พุทธัง สะระณัง คัจฉามิ',
 					preOptions: [PreOption.ThaiOrthography],
 					expected: 'बुद्धङ् सरणङ् गच्छामि'
 				},
 				{
 					description: 'should transliterate Devanagari to IAST with RemoveSchwaHindi',
-					src: 'Devanagari',
-					tgt: 'IAST',
+					src: Scripts.Devanagari,
+					tgt: Scripts.IAST,
 					txt: 'धर्म भारत की श्रमण परम्परा से निकला धर्म और दर्शन है',
 					preOptions: [PreOption.RemoveSchwaHindi],
 					expected: 'dharm bhārat kī śramaṇ paramparā se niklā dharm aur darśan hai'
@@ -232,7 +258,7 @@ describe('Aksharamukha', () => {
 			it.each(scriptCodeTests)(
 				'$description',
 				({ src, tgt, txt, expected }) => {
-					const result = instance.process(src, tgt, txt, {
+					const result = instance.process(src as Script, tgt as Script, txt, {
 						nativize: true,
 						param: ProcessParams.scriptCode,
 						preOptions: [],
@@ -292,7 +318,7 @@ describe('Aksharamukha', () => {
 			it.each(langCodeTests)(
 				'$description',
 				({ src, tgt, txt, expected }) => {
-					const result = instance.process(src, tgt, txt, {
+					const result = instance.process(src as Script, tgt as Script, txt, {
 						nativize: true,
 						param: ProcessParams.langCode,
 						preOptions: [],
@@ -338,7 +364,7 @@ describe('Aksharamukha', () => {
 			it.each(langNameTests)(
 				'$description',
 				({ src, tgt, txt, expected }) => {
-					const result = instance.process(src, tgt, txt, {
+					const result = instance.process(src as Script, tgt as Script, txt, {
 						nativize: true,
 						param: ProcessParams.langName,
 						preOptions: [],
@@ -352,8 +378,8 @@ describe('Aksharamukha', () => {
 		describe('Tests using enum values', () => {
 			it('should transliterate using Script enums for src and tgt', () => {
 				const result = instance.process(
-					ScriptRomanization.ITRANS,
-					ScriptIndic.Telugu,
+					Scripts.ITRANS,
+					Scripts.Telugu,
 					'rAma ##( test )## rAma',
 					{
 						nativize: true,
@@ -368,8 +394,8 @@ describe('Aksharamukha', () => {
 
 			it('should transliterate using PreOption enum values', () => {
 				const result = instance.process(
-					ScriptIndic.Thai,
-					ScriptIndic.Devanagari,
+					Scripts.Thai,
+					Scripts.Devanagari,
 					'พุทธัง สะระณัง คัจฉามิ',
 					{
 						nativize: true,
@@ -384,8 +410,8 @@ describe('Aksharamukha', () => {
 
 			it('should transliterate using PostOption enum values', () => {
 				const result = instance.process(
-					ScriptRomanization.HarvardKyoto,
-					ScriptIndic.Tamil,
+					Scripts.HarvardKyoto,
+					Scripts.Tamil,
 					'bRhaspati gaMgA',
 					{
 						nativize: false,
