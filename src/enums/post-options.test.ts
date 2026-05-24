@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { fixPostOptions, PostOption } from './post-options';
 
 describe('Post Options', () => {
-  	describe('Fix Post Options', () => {
+	describe('Fix Post Options', () => {
 		it('should keep only the latest option inside mutually exclusive groups', () => {
 			const result = fixPostOptions([
 				PostOption.MalayalamLineVirama,
