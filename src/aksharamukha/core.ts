@@ -1,4 +1,4 @@
-import { loadPyodide, type PyodideInterface } from 'pyodide';
+import type { PyodideInterface } from 'pyodide';
 import { fixPostOptions, PostOption, PreOption, Script, Scripts } from '../enums';
 
 export type ProcessArgs = {
@@ -50,6 +50,19 @@ export type WheelInstallerArgs = {
 
 export type WheelInstaller = (args: WheelInstallerArgs) => Promise<void>;
 
+let loadPyodideRef: typeof import('pyodide')['loadPyodide'] | undefined;
+
+async function getLoadPyodide() {
+	if (loadPyodideRef == null) {
+		// Keep import target non-literal so browser bundlers don't eagerly crawl pyodide's node:* branches.
+		const dynamicImport = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<typeof import('pyodide')>;
+		const pyodideModule = await dynamicImport('pyodide');
+		loadPyodideRef = pyodideModule.loadPyodide;
+	}
+
+	return loadPyodideRef;
+}
+
 export function createAksharamukha(installWheels: WheelInstaller) {
 	return class Aksharamukha {
 		static _isTestEnv: boolean = false;
@@ -67,6 +80,7 @@ export function createAksharamukha(installWheels: WheelInstaller) {
 		public static async new(opts?: AksharamukhaInitOptions): Promise<Aksharamukha> {
 			let pyodide = opts?.pyodide;
 			if (pyodide == null) {
+				const loadPyodide = await getLoadPyodide();
 				if (this._isTestEnv) {
 					pyodide = await loadTestPyodide();
 				} else {
@@ -167,6 +181,7 @@ export function createAksharamukha(installWheels: WheelInstaller) {
 }
 
 async function loadTestPyodide(): Promise<PyodideInterface> {
+	const loadPyodide = await getLoadPyodide();
 	return await loadPyodide({
 		indexURL: './node_modules/pyodide',
 		packageCacheDir: './node_modules/pyodide'
