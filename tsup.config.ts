@@ -6,22 +6,54 @@ const pyodideDependencies = [
 	'pyodide.asm.js',
 ];
 
-export default defineConfig({
-	entry: ['src/index.ts'],
-	format: ['cjs', 'esm', 'iife'],  // CommonJS, ES Modules, and Browser IIFE
-	globalName: 'Aksharamukha',      // For browsers (window.Aksharamukha)
-	dts: true,                       // Generate .d.ts types
-	sourcemap: true,
-	minify: true,
-	clean: true,
-	esbuildOptions: options => {
-		if (options.format !== 'esm') {
+export default defineConfig([
+	{
+		entry: {
+			index: 'src/index.ts',
+			'index.node': 'src/index.node.ts'
+		},
+		format: ['cjs', 'esm'],
+		dts: true,
+		sourcemap: true,
+		minify: true,
+		clean: true,
+		esbuildOptions: options => {
+			if (options.format !== 'esm') {
+				options.logOverride = {
+					'empty-import-meta': 'silent'
+				};
+			}
+		},
+		onSuccess: async () => {
+			// Copy runtime wheels and pyodide assets into dist for browser consumption.
+			// @ts-expect-error Runtime Node import; this TS setup doesn't resolve built-in module types here.
+			const fs = await import('fs');
+			const files = fs.lstatSync('./downloads', { throwIfNoEntry: true });
+			if (!files.isDirectory()) {
+				throw new Error('./downloads is not a directory.');
+			}
+
+			fs.cpSync('./downloads', './dist', { recursive: true });
+			const pyodideFiles = fs.readdirSync('./node_modules/pyodide');
+			for (const file of pyodideFiles) {
+				if (file.endsWith('.whl') || file.endsWith('.zip') || pyodideDependencies.includes(file)) {
+					fs.cpSync(`./node_modules/pyodide/${file}`, `./dist/${file}`);
+				}
+			}
+		}
+	},
+	{
+		entry: ['src/index.ts'],
+		format: ['iife'],
+		globalName: 'Aksharamukha',
+		sourcemap: true,
+		minify: true,
+		clean: false,
+		esbuildOptions: options => {
 			options.logOverride = {
 				'empty-import-meta': 'silent'
 			};
-		}
-		
-		if (options.format === 'iife') {
+
 			// Keep default class as global while preserving named exports (enums/helpers) on it.
 			options.footer = {
 				js: `
@@ -39,22 +71,5 @@ export default defineConfig({
 				`
 			};
 		}
-	},
-	onSuccess: async () => {
-		// Copy everything from downloads to dist
-		// @ts-expect-error Runtime Node import; this TS setup doesn't resolve built-in module types here.
-		const fs = await import('fs');
-		const files = fs.lstatSync('./downloads', { throwIfNoEntry: true });
-		if (!files.isDirectory()) {
-			throw new Error('./downloads is not a directory.');
-		}
-
-		fs.cpSync('./downloads', './dist', { recursive: true });
-		const pyodideFiles = fs.readdirSync('./node_modules/pyodide');
-		for (const file of pyodideFiles) {
-			if (file.endsWith('.whl') || file.endsWith('.zip') || pyodideDependencies.includes(file)) {
-				fs.cpSync(`./node_modules/pyodide/${file}`, `./dist/${file}`);
-			}
-		}
 	}
-});
+]);

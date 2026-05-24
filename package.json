@@ -8,9 +8,15 @@
 	"types": "dist/index.d.ts",
 	"exports": {
 		".": {
-			"browser": "./dist/index.global.js",
+			"types": "./dist/index.d.ts",
+			"browser": "./dist/index.js",
+			"node": {
+				"import": "./dist/index.node.js",
+				"require": "./dist/index.node.cjs"
+			},
+			"import": "./dist/index.js",
 			"require": "./dist/index.cjs",
-			"import": "./dist/index.js"
+			"default": "./dist/index.js"
 		}
 	},
 	"scripts": {
