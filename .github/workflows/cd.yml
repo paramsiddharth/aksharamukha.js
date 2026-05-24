@@ -29,6 +29,9 @@ jobs:
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
 
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
