@@ -21,8 +21,8 @@ You can use Aksharamukha.js directly in your HTML files by including it via a CD
 	<script type='module'>
 		const aksharamukha = await Aksharamukha.new();
 		const transliterated = await aksharamukha.process(
-			'autodetect',
-			'Devanagari',
+			Aksharamukha.Scripts.AutoDetect,
+			Aksharamukha.Scripts.Devanagari,
 			'praNAm.'
 		);
 		alert(transliterated);
