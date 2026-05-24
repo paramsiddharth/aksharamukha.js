@@ -22,17 +22,27 @@ export default defineConfig({
 		}
 		
 		if (options.format === 'iife') {
-			// Add currentScript reference and window.Aksharamukha point to the default export
+			// Keep default class as global while preserving named exports (enums/helpers) on it.
 			options.footer = {
 				js: `
-					Object.assign(window, { ${options.globalName}: ${options.globalName}.default });
-					window.${options.globalName}._setCurrentScript(document.currentScript);
+					(function () {
+						var ns = window.${options.globalName};
+						var main = ns && ns.default ? ns.default : ns;
+						if (main && ns) {
+							Object.assign(main, ns);
+						}
+						window.${options.globalName} = main;
+						if (window.${options.globalName} && typeof document !== 'undefined') {
+							window.${options.globalName}._setCurrentScript(document.currentScript);
+						}
+					})();
 				`
 			};
 		}
 	},
 	onSuccess: async () => {
 		// Copy everything from downloads to dist
+		// @ts-expect-error Runtime Node import; this TS setup doesn't resolve built-in module types here.
 		const fs = await import('fs');
 		const files = fs.lstatSync('./downloads', { throwIfNoEntry: true });
 		if (!files.isDirectory()) {
