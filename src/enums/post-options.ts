@@ -351,6 +351,9 @@ export enum PostOption {
 	// MuktamSiddham font.
 	Siddhammukta = 'siddhammukta',
 
+	// Siddham AP font.
+	Siddhamap = 'siddhamap',
+
 	// Enable all conjuncts.
 	SinhalaConjuncts = 'SinhalaConjuncts',
 
@@ -548,4 +551,61 @@ export enum PostOption {
 
 	// Tsheg.
 	ZanzabarSpaceTsheg = 'ZanzabarSpaceTsheg',
+}
+
+const mutuallyExclusivePostOptions: Array<Set<PostOption>> = [
+	new Set([PostOption.Ranjanalantsa, PostOption.Ranjanawartu]),
+	new Set([PostOption.UseAlternateI1, PostOption.UseAlternateI2]),
+	new Set([PostOption.Siddhammukta, PostOption.Siddhamap]),
+	new Set([PostOption.PhagsPaTib, PostOption.PhagsPaSeal]),
+	new Set([PostOption.MalayalamLineVirama, PostOption.MalayalamCircVirama]),
+	new Set([
+		PostOption.Devanagariuttara,
+		PostOption.Devanagarijain,
+		PostOption.Devanagarinepali,
+		PostOption.Devanagaribalbodh,
+	]),
+	new Set([PostOption.MDotAboveToBelow, PostOption.NasalTilde]),
+	new Set([PostOption.Sundapura, PostOption.Kawitan]),
+	new Set([
+		PostOption.ThaiTranscription,
+		PostOption.ThaiSajjhayaOrthography,
+		PostOption.ThaiSajjhayawithA,
+		PostOption.ThaiNativeConsonants,
+	]),
+	new Set([
+		PostOption.LaoTranscription,
+		PostOption.LaoSajjhaya,
+		PostOption.LaoSajjhayawithA,
+		PostOption.LaoPhonetic,
+	]),
+];
+
+const mutuallyExclusivePostOptionGroupByOption = new Map<PostOption, number>(
+	mutuallyExclusivePostOptions.flatMap((group, groupIndex) =>
+		Array.from(group, option => [option, groupIndex] as const)
+	)
+);
+
+export function fixPostOptions(options: PostOption[]): PostOption[] {
+	const selectedByGroup = new Map<number, PostOption>();
+	const fixedOptions = new Map<PostOption, true>();
+
+	for (const option of options) {
+		const groupIndex = mutuallyExclusivePostOptionGroupByOption.get(option);
+
+		if (groupIndex != null) {
+			const previousOption = selectedByGroup.get(groupIndex);
+			if (previousOption != null) {
+				fixedOptions.delete(previousOption);
+			}
+			selectedByGroup.set(groupIndex, option);
+		}
+
+		// Keep latest-order semantics by reinserting at the end.
+		fixedOptions.delete(option);
+		fixedOptions.set(option, true);
+	}
+
+	return Array.from(fixedOptions.keys());
 }

@@ -151,7 +151,7 @@ describe('Aksharamukha', () => {
 					src: 'HK',
 					tgt: 'Tamil',
 					txt: 'bRhaspati gaMgA',
-					postOptions: ['TamilSubScript', 'TamilRemoveApostrophe'],
+					postOptions: [PostOption.TamilSubScript, PostOption.TamilRemoveApostrophe],
 					expected: 'ப்₃ருஹஸ்பதி க₃ம்கா₃'
 				}
 			];
@@ -177,7 +177,7 @@ describe('Aksharamukha', () => {
 					src: 'Thai',
 					tgt: 'Devanagari',
 					txt: 'พุทธัง สะระณัง คัจฉามิ',
-					preOptions: ['ThaiOrthography'],
+					preOptions: [PreOption.ThaiOrthography],
 					expected: 'बुद्धङ् सरणङ् गच्छामि'
 				},
 				{
@@ -185,7 +185,7 @@ describe('Aksharamukha', () => {
 					src: 'Devanagari',
 					tgt: 'IAST',
 					txt: 'धर्म भारत की श्रमण परम्परा से निकला धर्म और दर्शन है',
-					preOptions: ['RemoveSchwaHindi'],
+					preOptions: [PreOption.RemoveSchwaHindi],
 					expected: 'dharm bhārat kī śramaṇ paramparā se niklā dharm aur darśan hai'
 				}
 			];

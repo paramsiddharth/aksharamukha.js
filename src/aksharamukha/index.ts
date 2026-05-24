@@ -1,5 +1,6 @@
 import { loadPyodide, type PyodideInterface } from 'pyodide';
 import { wheelBaseURL, wheels } from '../constants';
+import { fixPostOptions, PostOption, PreOption } from '../enums';
 
 const isNode = typeof window === 'undefined' || (typeof process !== 'undefined' && process.versions?.node);
 
@@ -18,8 +19,8 @@ export type AutoDetectArgs = {
 export type ProcessProps = {
 	nativize: boolean;
 	param: ProcessParam;
-	preOptions: string[];
-	postOptions: string[];
+	preOptions: PreOption[];
+	postOptions: PostOption[];
 };
 
 export const ProcessParams = {
@@ -202,7 +203,7 @@ function buildProcessCMD(props: ProcessArgs) {
 			nativize=${props.props.nativize ? 'True' : 'False'},
 			param=${JSON.stringify(props.props.param)},
 			pre_options=${JSON.stringify(props.props.preOptions)},
-			post_options=${JSON.stringify(props.props.postOptions)}
+			post_options=${JSON.stringify(fixPostOptions(props.props.postOptions))}
 		)
 	`
 }
