@@ -2,7 +2,7 @@ import { wheels } from '../constants';
 import { createAksharamukha, type WheelInstallerArgs } from './core';
 
 const installWheelsInNode = async ({ pyodide, micropip }: WheelInstallerArgs) => {
-	const fs = await import('node:fs');
+	const fs = await import('fs');
 
 	for (const wheel of wheels) {
 		const currentDir = getCurrentDir();
