@@ -1,11 +1,12 @@
 import { loadPyodide, type PyodideInterface } from 'pyodide';
 import { wheelBaseURL, wheels } from '../constants';
+import { fixPostOptions, PostOption, PreOption, Script, Scripts } from '../enums';
 
 const isNode = typeof window === 'undefined' || (typeof process !== 'undefined' && process.versions?.node);
 
 export type ProcessArgs = {
-	src: string,
-	tgt: string,
+	src: Script,
+	tgt: Script,
 	txt: string,
 	props: ProcessProps
 };
@@ -18,8 +19,8 @@ export type AutoDetectArgs = {
 export type ProcessProps = {
 	nativize: boolean;
 	param: ProcessParam;
-	preOptions: string[];
-	postOptions: string[];
+	preOptions: PreOption[];
+	postOptions: PostOption[];
 };
 
 export const ProcessParams = {
@@ -107,7 +108,7 @@ export default class Aksharamukha {
 		const instance = new Aksharamukha(pyodide);
 
 		// Pre-heat by doing the first process call
-		instance.process('autodetect', 'Devanagari', 'praNAm');
+		instance.process(Scripts.AutoDetect, Scripts.Devanagari, 'praNAm');
 		return instance;
 	}
 
@@ -119,8 +120,8 @@ export default class Aksharamukha {
 	}
 
 	public process(
-		src: string,
-		tgt: string,
+		src: Script,
+		tgt: Script,
 		txt: string,
 		{
 			nativize,
@@ -144,8 +145,8 @@ export default class Aksharamukha {
 	}
 
 	public async processAsync(
-		src: string,
-		tgt: string,
+		src: Script,
+		tgt: Script,
 		txt: string,
 		{
 			nativize,
@@ -202,7 +203,7 @@ function buildProcessCMD(props: ProcessArgs) {
 			nativize=${props.props.nativize ? 'True' : 'False'},
 			param=${JSON.stringify(props.props.param)},
 			pre_options=${JSON.stringify(props.props.preOptions)},
-			post_options=${JSON.stringify(props.props.postOptions)}
+			post_options=${JSON.stringify(fixPostOptions(props.props.postOptions))}
 		)
 	`
 }
