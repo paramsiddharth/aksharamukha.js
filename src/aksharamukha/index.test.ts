@@ -2,6 +2,12 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { loadPyodide } from 'pyodide';
 
 import Aksharamukha, { ProcessParams } from '.';
+import {
+	ScriptIndic,
+	ScriptRomanization,
+	PreOption,
+	PostOption,
+} from '../enums';
 
 describe('Aksharamukha', () => {
 	describe('Basic structure and initialization', () => {
@@ -341,6 +347,56 @@ describe('Aksharamukha', () => {
 					expect(result).toBe(expected);
 				}
 			);
+		});
+
+		describe('Tests using enum values', () => {
+			it('should transliterate using Script enums for src and tgt', () => {
+				const result = instance.process(
+					ScriptRomanization.ITRANS,
+					ScriptIndic.Telugu,
+					'rAma ##( test )## rAma',
+					{
+						nativize: true,
+						param: ProcessParams.default,
+						preOptions: [],
+						postOptions: [],
+					}
+				);
+
+				expect(result).toBe('రామ ( test ) రామ');
+			});
+
+			it('should transliterate using PreOption enum values', () => {
+				const result = instance.process(
+					ScriptIndic.Thai,
+					ScriptIndic.Devanagari,
+					'พุทธัง สะระณัง คัจฉามิ',
+					{
+						nativize: true,
+						param: ProcessParams.default,
+						preOptions: [PreOption.ThaiOrthography],
+						postOptions: [],
+					}
+				);
+
+				expect(result).toBe('बुद्धङ् सरणङ् गच्छामि');
+			});
+
+			it('should transliterate using PostOption enum values', () => {
+				const result = instance.process(
+					ScriptRomanization.HarvardKyoto,
+					ScriptIndic.Tamil,
+					'bRhaspati gaMgA',
+					{
+						nativize: false,
+						param: ProcessParams.default,
+						preOptions: [],
+						postOptions: [PostOption.TamilSubScript, PostOption.TamilRemoveApostrophe],
+					}
+				);
+
+				expect(result).toBe('ப்₃ருஹஸ்பதி க₃ம்கா₃');
+			});
 		});
 	});
 
