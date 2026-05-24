@@ -13,7 +13,7 @@ export enum PreOption {
 	BalineseMoveRepha = 'BalineseMoveRepha',
 
 	// Render conjuncts like sva and dva explicitly.
-	// Misspelt as in the original library, for compatibility.
+	// Misspelt as in the Python library, for compatibility.
 	BengaliSubjoinedVa = 'BengaliSubojinedVa',
 
 	// Map Bengali ya forms to distinct transliteration outputs.

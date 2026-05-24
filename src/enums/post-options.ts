@@ -130,10 +130,12 @@ export enum PostOption {
 	GurmukhiYakaash = 'GurmukhiYakaash',
 
 	// Use Qof.
-	HeberewQoph = 'HeberewQoph',
+	// Misspelt as in the Python library, for compatibility.
+	HebrewQoph = 'HeberewQoph',
 
 	// Use Kamats Katan for Short o.
-	HebewShortO = 'HebewShortO',
+	// Misspelt as in the Python library, for compatibility.
+	HebrewShortO = 'HebewShortO',
 
 	// Use Hindi/Marathi Mapping.
 	HindiMarathiRomanLoCFix = 'HindiMarathiRomanLoCFix',
