@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import Aksharamukha, { Script, Scripts } from "aksharamukha";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,28 +15,22 @@ import { Copy, Check, Shuffle, ArrowRightLeft } from "lucide-react";
 
 declare global {
 	interface Window {
-		aksharamukha?: {
-			process: (
-				text: string,
-				fromScript: string,
-				toScript: string
-			) => Promise<string>;
-		};
+		aksharamukha?: Aksharamukha;
 	}
 }
 
 const scripts = [
-	{ code: 'kaithi', value: "Kaithi", label: "𑂍𑂶𑂟𑂲 (Kaithi)", example: "𑂣𑂹𑂩𑂝𑂰𑂧𑂹" },
-	{ code: 'devanagari', value: "Devanagari", label: "देवनागरी (Devanagari)", example: "प्रणाम्" },
-	{ code: 'tamil', value: "Tamil", label: "தமிழ் (Tamil)", example: "வணக்கம்" },
-	{ code: 'kannada', value: "Kannada", label: "ಕನ್ನಡ (Kannada)", example: "ನಮಸ್ಕಾರ" },
-	{ code: 'telugu', value: "Telugu", label: "తెలుగు (Telugu)", example: "నమస్కారం" },
-	{ code: 'malayalam', value: "Malayalam", label: "മലയാളം (Malayalam)", example: "നമസ്കാരം" },
-	{ code: 'bengali', value: "Bengali", label: "বাংলা (Bengali)", example: "নমস্কার" },
-	{ code: 'gujarati', value: "Gujarati", label: "ગુજરાતી (Gujarati)", example: "નમસ્કાર" },
-	{ code: 'gurmukhi', value: "Gurmukhi", label: "ਗੁਰਮੁਖੀ (Gurmukhi)", example: "ਸਤ ਸ੍ਰੀ ਅਕਾਲ" },
-	{ code: 'oriya', value: "Oriya", label: "ଓଡ଼ିଆ (Oriya)", example: "ନମସ୍କାର" },
-	{ code: 'itrans', value: "ITRANS", label: "Latin (ITRANS)", example: "namaskara" },
+	{ code: Scripts.Kaithi, label: "𑂍𑂶𑂟𑂲 (Kaithi)", example: "𑂣𑂹𑂩𑂝𑂰𑂧𑂹" },
+	{ code: Scripts.Devanagari, label: "देवनागरी (Devanagari)", example: "प्रणाम्" },
+	{ code: Scripts.Tamil, label: "தமிழ் (Tamil)", example: "வணக்கம்" },
+	{ code: Scripts.Kannada, label: "ಕನ್ನಡ (Kannada)", example: "ನಮಸ್ಕಾರ" },
+	{ code: Scripts.Telugu, label: "తెలుగు (Telugu)", example: "నమస్కారం" },
+	{ code: Scripts.Malayalam, label: "മലയാളം (Malayalam)", example: "നമസ്കാരം" },
+	{ code: Scripts.BengaliBangla, label: "বাংলা (Bengali)", example: "নমস্কার" },
+	{ code: Scripts.Gujarati, label: "ગુજરાતી (Gujarati)", example: "નમસ્કાર" },
+	{ code: Scripts.PunjabiGurmukhi, label: "ਗੁਰਮੁਖੀ (Gurmukhi)", example: "ਸਤ ਸ੍ਰੀ ਅਕਾਲ" },
+	{ code: Scripts.OriyaOdia, label: "ଓଡ଼ିଆ (Oriya)", example: "ନମସ୍କାର" },
+	{ code: Scripts.ITRANS, label: "Latin (ITRANS)", example: "namaskara" },
 ];
 
 const sampleTexts = [
@@ -46,17 +42,25 @@ const sampleTexts = [
 	"kShamaa karie",
 ];
 
-interface LiveDemoSectionProps {
-	isLoaded: boolean;
-}
-
-export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
+export default function LiveDemoSection() {
+	const [client, setClient] = useState<Aksharamukha | null>(null);
 	const [inputText, setInputText] = useState("praNAm.");
 	const [outputText, setOutputText] = useState("");
-	const [fromScript, setFromScript] = useState("itrans");
-	const [toScript, setToScript] = useState("kaithi");
+	const [fromScript, setFromScript] = useState<Script>(Scripts.ITRANS);
+	const [toScript, setToScript] = useState<Script>(Scripts.Kaithi);
 	const [copied, setCopied] = useState(false);
 	const [isConverting, setIsConverting] = useState(false);
+	
+	const isLoaded = useMemo(() => {
+		return client != null;
+	}, [client]);
+
+	useEffect(() => {
+		(async function() {
+			const client = await Aksharamukha.new();
+			setClient(client);
+		})()
+	}, [setClient]);
 
 	const swapScripts = useCallback(() => {
 		const temp = fromScript;
@@ -72,11 +76,16 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 	}, []);
 
 	useEffect(() => {
-		if (isLoaded && window.aksharamukha && inputText) {
+		if (isLoaded && inputText) {
+			if (!client) {
+				alert("Aksharamukha failed to load. Please refresh the page, and if the issue persists, report it on GitHub.");
+				return;
+			}
+
 			setIsConverting(true);
 			const timeoutId = setTimeout(async () => {
 				try {
-					const result = await window.aksharamukha?.process(
+					const result = client?.process(
 						fromScript,
 						toScript,
 						inputText
@@ -91,7 +100,7 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 
 			return () => clearTimeout(timeoutId);
 		}
-	}, [inputText, fromScript, toScript, isLoaded]);
+	}, [inputText, fromScript, toScript, isLoaded, client]);
 
 	const handleCopy = async () => {
 		await navigator.clipboard.writeText(outputText);
@@ -166,7 +175,7 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 									</label>
 									<Select
 										value={fromScript}
-										onValueChange={setFromScript}
+										onValueChange={value => setFromScript(value as Script)}
 									>
 										<SelectTrigger className="border-teal-200/60 dark:border-teal-800/50 focus:border-teal-400 dark:focus:border-teal-600 focus:ring-teal-500/20 hover:border-teal-300/70 dark:hover:border-teal-700/60 transition-all duration-200">
 											<SelectValue />
@@ -174,7 +183,7 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 										<SelectContent className="border-teal-200/60 dark:border-teal-800/50">
 											{scripts.map((script) => (
 												<SelectItem
-													key={script.value}
+													key={script.code}
 													value={script.code}
 													className="hover:bg-teal-50/80 dark:hover:bg-teal-950/50"
 												>
@@ -234,7 +243,7 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 									</label>
 									<Select
 										value={toScript}
-										onValueChange={setToScript}
+										onValueChange={value => setToScript(value as Script)}
 									>
 										<SelectTrigger className="border-teal-200/60 dark:border-teal-800/50 focus:border-teal-400 dark:focus:border-teal-600 focus:ring-teal-500/20 hover:border-teal-300/70 dark:hover:border-teal-700/60 transition-all duration-200">
 											<SelectValue />
@@ -242,7 +251,7 @@ export default function LiveDemoSection({ isLoaded }: LiveDemoSectionProps) {
 										<SelectContent className="border-teal-200/60 dark:border-teal-800/50">
 											{scripts.map((script) => (
 												<SelectItem
-													key={script.value}
+													key={script.code}
 													value={script.code}
 													className="hover:bg-teal-50/80 dark:hover:bg-teal-950/50"
 												>
