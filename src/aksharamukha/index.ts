@@ -76,7 +76,6 @@ export default class Aksharamukha {
 	private static async getLoadPyodide() {
 		if (this._loadPyodideRef == null) {
 			const dynamicImport = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<typeof import('pyodide')>;
-			// const dynamicImport = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<{ loadPyodide: typeof import('pyodide')['loadPyodide'] }>;
 
 			let pyodideModule: typeof import('pyodide');
 			if (isNode) {
