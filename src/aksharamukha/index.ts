@@ -46,22 +46,8 @@ export type AksharamukhaInitOptions = {
 	pyodide?: PyodideInterface;
 };
 
-let loadPyodideRef: typeof import('pyodide')['loadPyodide'] | undefined;
-
-async function getLoadPyodide() {
-	if (loadPyodideRef == null) {
-		const dynamicImport = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<{ loadPyodide: typeof import('pyodide')['loadPyodide'] }>;
-
-		const pyodideModule = isNode
-			? await dynamicImport('pyodide')
-			: await dynamicImport(`${aksharamukhaCDNIndexURL}/pyodide.mjs`);
-		loadPyodideRef = pyodideModule.loadPyodide;
-	}
-
-	return loadPyodideRef;
-}
-
 export default class Aksharamukha {
+	static _loadPyodideRef: typeof import('pyodide')['loadPyodide'] | undefined;
 	static _currentScript: HTMLScriptElement;
 	pyodide: PyodideInterface;
 
@@ -77,6 +63,38 @@ export default class Aksharamukha {
 		this._currentScript = script;
 	}
 
+	private static getCurrentScriptPath(): string {
+		if (this._currentScript) {
+			const scriptPath = this._currentScript.src;
+			const parentPath = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
+			return parentPath;
+		}
+
+		throw new Error('Could not determine script path for browser environment. Ensure that the script is properly included in the HTML with a src attribute.');
+	}
+
+	private static async getLoadPyodide() {
+		if (this._loadPyodideRef == null) {
+			const dynamicImport = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<typeof import('pyodide')>;
+			// const dynamicImport = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<{ loadPyodide: typeof import('pyodide')['loadPyodide'] }>;
+
+			let pyodideModule: typeof import('pyodide');
+			if (isNode) {
+				pyodideModule = await dynamicImport('pyodide');
+			} else {
+				try {
+					const parentPath = this.getCurrentScriptPath();
+					pyodideModule = await dynamicImport(`${parentPath}/pyodide.mjs`);
+				} catch {
+					pyodideModule = await dynamicImport(`${aksharamukhaCDNIndexURL}/pyodide.mjs`);
+				}
+			}
+			this._loadPyodideRef = pyodideModule.loadPyodide;
+		}
+
+		return this._loadPyodideRef;
+	}
+
 	public static async new(opts?: AksharamukhaInitOptions): Promise<Aksharamukha> {
 		let pyodide = opts?.pyodide;
 		if (pyodide == null) {
@@ -86,10 +104,16 @@ export default class Aksharamukha {
 				}
 				pyodide = await this._testLoadPyodide();
 			} else {
-				const loadPyodide = await getLoadPyodide();
-				pyodide = isNode
-					? await loadPyodide()
-					: await loadPyodide({ indexURL: aksharamukhaCDNIndexURL });
+				const loadPyodide = await this.getLoadPyodide();
+				try {
+					pyodide = await loadPyodide({ indexURL: this.getCurrentScriptPath() });
+				} catch {
+					try {
+						pyodide = await loadPyodide();
+					} catch {
+						pyodide = await loadPyodide({ indexURL: aksharamukhaCDNIndexURL });
+					}
+				}
 			}
 		}
 
@@ -130,8 +154,7 @@ export default class Aksharamukha {
 			}
 		} else {
 			try {
-				const scriptPath = this._currentScript.src;
-				const parentPath = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
+				const parentPath = this.getCurrentScriptPath();
 				await micropip.install(wheels.map(wheel => `${parentPath}/${wheel}`), { keep_going: true })
 			} catch {
 				await micropip.install(wheels.map(wheel => `${aksharamukhaCDNIndexURL}/${wheel}`), { keep_going: true })
