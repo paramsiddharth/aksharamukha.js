@@ -1,10 +1,19 @@
 import { defineConfig } from 'tsup';
 
+// // @ts-expect-error Runtime Node import; this TS setup doesn't resolve built-in module types here.
+// import { readFileSync } from 'fs';
+
 const pyodideDependencies = [
 	'pyodide-lock.json',
 	'pyodide.asm.wasm',
 	'pyodide.asm.js',
+	'pyodide.mjs',
 ];
+
+/* const packageJson = JSON.parse(readFileSync('./package.json', 'utf8')) as {
+	dependencies?: Record<string, string>;
+};
+const pyodideVersionFromDependency = packageJson.dependencies?.pyodide?.match(/\d+\.\d+\.\d+/)?.[0]; */
 
 export default defineConfig({
 	entry: ['src/index.ts'],
@@ -14,6 +23,9 @@ export default defineConfig({
 	sourcemap: true,
 	minify: true,
 	clean: true,
+	/* define: {
+		__PYODIDE_VERSION__: JSON.stringify(pyodideVersionFromDependency),
+	}, */
 	esbuildOptions: options => {
 		if (options.format !== 'esm') {
 			options.logOverride = {
