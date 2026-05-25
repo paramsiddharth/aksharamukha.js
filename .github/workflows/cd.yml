@@ -140,6 +140,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Install core dependencies
+        run: npm ci
+
+      - name: Download wheels
+        run: npm run download-wheels
+
+      - name: Build core
+        run: npm run build
+
       - name: Install dependencies
         working-directory: ./docs
         run: npm ci
