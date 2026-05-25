@@ -1,8 +1,11 @@
-import { loadPyodide, type PyodideInterface } from 'pyodide';
-import { wheelBaseURL, wheels } from '../constants';
+import { type PyodideInterface } from 'pyodide';
+import { aksharamukhaCDNIndexURL, wheels } from '../constants';
 import { fixPostOptions, PostOption, PreOption, Script, Scripts } from '../enums';
 
-const isNode = typeof window === 'undefined' || (typeof process !== 'undefined' && process.versions?.node);
+const isNode =
+	typeof globalThis !== 'undefined' &&
+	typeof (globalThis as { process?: unknown }).process === 'object' &&
+	typeof (globalThis as { process?: { versions?: { node?: unknown } } }).process?.versions?.node === 'string';
 
 export type ProcessArgs = {
 	src: Script,
@@ -44,9 +47,13 @@ export type AksharamukhaInitOptions = {
 };
 
 export default class Aksharamukha {
-	static _isTestEnv: boolean = false;
+	static _loadPyodideRef: typeof import('pyodide')['loadPyodide'] | undefined;
 	static _currentScript: HTMLScriptElement;
 	pyodide: PyodideInterface;
+
+	static _isTestEnv: boolean = false;
+	static _testLoadPyodide: typeof import('pyodide')['loadPyodide'];
+	static _testFS: typeof import('fs');
 
 	private constructor(pyodide: PyodideInterface) {
 		this.pyodide = pyodide;
@@ -56,21 +63,72 @@ export default class Aksharamukha {
 		this._currentScript = script;
 	}
 
+	private static getCurrentScriptPath(): string {
+		if (this._currentScript) {
+			const scriptPath = this._currentScript.src;
+			const parentPath = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
+			return parentPath;
+		}
+
+		throw new Error('Could not determine script path for browser environment. Ensure that the script is properly included in the HTML with a src attribute.');
+	}
+
+	private static async getLoadPyodide() {
+		if (this._loadPyodideRef == null) {
+			const dynamicImport = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<typeof import('pyodide')>;
+
+			let pyodideModule: typeof import('pyodide');
+			if (isNode) {
+				pyodideModule = await dynamicImport('pyodide');
+			} else {
+				try {
+					const parentPath = this.getCurrentScriptPath();
+					pyodideModule = await dynamicImport(`${parentPath}/pyodide.mjs`);
+				} catch {
+					pyodideModule = await dynamicImport(`${aksharamukhaCDNIndexURL}/pyodide.mjs`);
+				}
+			}
+			this._loadPyodideRef = pyodideModule.loadPyodide;
+		}
+
+		return this._loadPyodideRef;
+	}
+
 	public static async new(opts?: AksharamukhaInitOptions): Promise<Aksharamukha> {
 		let pyodide = opts?.pyodide;
 		if (pyodide == null) {
 			if (this._isTestEnv) {
-				pyodide = await loadTestPyodide();
+				if (this._testLoadPyodide == null) {
+					throw new Error('Test Pyodide instance not set. Please set Aksharamukha._testLoadPyodide before running tests.');
+				}
+				pyodide = await this._testLoadPyodide();
 			} else {
-				pyodide = await loadPyodide();
+				const loadPyodide = await this.getLoadPyodide();
+				try {
+					pyodide = await loadPyodide({ indexURL: this.getCurrentScriptPath() });
+				} catch {
+					try {
+						pyodide = await loadPyodide();
+					} catch {
+						pyodide = await loadPyodide({ indexURL: aksharamukhaCDNIndexURL });
+					}
+				}
 			}
 		}
 
-		await pyodide.loadPackage('micropip');
-		const micropip = pyodide.pyimport('micropip');
+		const micropip = await ensureMicropip(pyodide);
 
 		if (isNode) {
-			const fs = await import('fs');
+			let fs: typeof import('fs');
+			if (this._isTestEnv) {
+				if (this._testFS == null) {
+					throw new Error('Test fs module not set. Please set Aksharamukha._testFS before running tests.');
+				}
+				fs = this._testFS;
+			} else {
+				// Keep import target non-literal so browser bundlers don't object to the import of "fs" in this Node-only block.
+				fs = await (new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<typeof import('fs')>)('fs');
+			}
 
 			for (const wheel of wheels) {
 				let wheelData: Buffer<ArrayBuffer>;
@@ -95,11 +153,10 @@ export default class Aksharamukha {
 			}
 		} else {
 			try {
-				const scriptPath = this._currentScript.src;
-				const parentPath = scriptPath.substring(0, scriptPath.lastIndexOf('/'));
+				const parentPath = this.getCurrentScriptPath();
 				await micropip.install(wheels.map(wheel => `${parentPath}/${wheel}`), { keep_going: true })
 			} catch {
-				await micropip.install(wheels.map(wheel => `${wheelBaseURL}/${wheel}`), { keep_going: true })
+				await micropip.install(wheels.map(wheel => `${aksharamukhaCDNIndexURL}/${wheel}`), { keep_going: true })
 			}
 		}
 
@@ -186,11 +243,14 @@ export default class Aksharamukha {
 	}
 }
 
-async function loadTestPyodide(): Promise<PyodideInterface> {
-	return await loadPyodide({
-		indexURL: './node_modules/pyodide',
-		packageCacheDir: './node_modules/pyodide'
-	})
+async function ensureMicropip(pyodide: PyodideInterface) {
+	await pyodide.loadPackage('micropip');
+	try {
+		await pyodide.runPythonAsync('import micropip');
+		return pyodide.pyimport('micropip');
+	} catch (error) {
+		throw new Error(`Failed to initialize micropip in Pyodide. ${String(error)}`);
+	}
 }
 
 function buildProcessCMD(props: ProcessArgs) {

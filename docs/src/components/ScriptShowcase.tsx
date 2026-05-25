@@ -1,16 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import Aksharamukha, { Script, Scripts } from "aksharamukha";
 
 declare global {
 	interface Window {
-		aksharamukha?: {
-			process: (
-				from: string,
-				to: string,
-				text: string
-			) => Promise<string>;
-		};
+		aksharamukha?: Aksharamukha;
 	}
 }
 
@@ -18,8 +13,8 @@ type Example = {
 	label: string; // short label like "ITRANS → Telugu"
 	fromScript: string;
 	toScript: string;
-	from: string;
-	to: string;
+	from: Script;
+	to: Script;
 	source: string;
 	expected: string;
 };
@@ -29,8 +24,8 @@ const EXAMPLES: Example[] = [
 		label: "ITRANS → Telugu",
 		fromScript: "ITRANS",
 		toScript: "Telugu",
-		from: 'itrans',
-		to: 'telugu',
+		from: Scripts.ITRANS,
+		to: Scripts.Telugu,
 		source: "rAma",
 		expected: "రామ",
 	},
@@ -38,8 +33,8 @@ const EXAMPLES: Example[] = [
 		label: "Harvard-Kyoto → Siddham",
 		fromScript: "Harvard-Kyoto",
 		toScript: "Siddham",
-		from: 'hk',
-		to: 'siddham',
+		from: Scripts.HarvardKyoto,
+		to: Scripts.Siddham,
 		source: "buddhaH",
 		expected: "𑖤𑖲𑖟𑖿𑖠𑖾",
 	},
@@ -47,14 +42,15 @@ const EXAMPLES: Example[] = [
 		label: "Devanagari → Malayalam",
 		fromScript: "Devanagari",
 		toScript: "Malayalam",
-		from: 'devanagari',
-		to: 'malayalam',
+		from: Scripts.Devanagari,
+		to: Scripts.Malayalam,
 		source: "धर्म",
 		expected: "ധര്മ",
 	},
 ];
 
-export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
+export default function ScriptShowcase() {
+	const [client, setClient] = useState<Aksharamukha | null>(null);
 	const [index, setIndex] = useState<number>(0);
 	const [firstConversion, setFirstConversion] = useState<boolean>(false);
 	const [converted, setConverted] = useState<string>(EXAMPLES[0].expected);
@@ -62,19 +58,35 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 	const [inError, setInError] = useState<boolean>(false);
 	const cycleInterval = 3000;
 
+	const isLoaded = useMemo(() => {
+		return client != null;
+	}, [client]);
+
+	useEffect(() => {
+		(async function() {
+			const client = await Aksharamukha.new();
+			setClient(client);
+		})()
+	}, [setClient]);
+
 	// perform conversion for the current example
 	useEffect(() => {
 		const ex = EXAMPLES[index];
 		setConverted(ex.expected);
 		setLoading(true);
 
+		if (!isLoaded) {
+			return;
+		}
+
 		async function doConvert() {
-			if (!isLoaded || !window?.aksharamukha?.process) {
+			if (!client) {
+				alert("Aksharamukha failed to load. Please refresh the page, and if the issue persists, report it on GitHub.");
 				return;
 			}
 			
 			try {
-				const out = await window.aksharamukha!.process(
+				const out = client.process(
 					ex.from,
 					ex.to,
 					ex.source
@@ -93,10 +105,7 @@ export default function ScriptShowcase({ isLoaded }: { isLoaded: boolean }) {
 
 		doConvert();
 		return () => {};
-	}, [
-		index,
-		isLoaded
-	]);
+	}, [index, isLoaded, client]);
 
 	useEffect(() => {
 		if (!firstConversion) {

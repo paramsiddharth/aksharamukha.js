@@ -4,6 +4,7 @@ const pyodideDependencies = [
 	'pyodide-lock.json',
 	'pyodide.asm.wasm',
 	'pyodide.asm.js',
+	'pyodide.mjs',
 ];
 
 export default defineConfig({

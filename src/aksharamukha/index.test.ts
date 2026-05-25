@@ -15,6 +15,11 @@ describe('Aksharamukha', () => {
 
 		beforeAll(async () => {
 			Aksharamukha._isTestEnv = true;
+			Aksharamukha._testLoadPyodide = async () => await loadPyodide({
+				indexURL: './node_modules/pyodide',
+				packageCacheDir: './node_modules/pyodide'
+			});
+			Aksharamukha._testFS = await import('fs');
 		});
 
 		afterAll(() => {

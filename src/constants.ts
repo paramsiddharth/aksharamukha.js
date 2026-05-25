@@ -4,4 +4,6 @@ export const wheels = [
 	'aksharamukha-2.3-py3-none-any.whl'
 ];
 
+// TODO: Fix
+export const aksharamukhaCDNIndexURL = `https://cdn.jsdelivr.net/npm/aksharamukha@2.3.0-staging2.0/dist`;
 export const wheelBaseURL = 'https://github.com/paramsiddharth/aksharamukha.js/releases/download/v2.3.0-0';
