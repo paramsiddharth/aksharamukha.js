@@ -20,8 +20,10 @@ declare global {
 }
 
 const scripts = [
+	{ code: Scripts.ITRANS, label: "Latin (ITRANS)", example: "namaskara" },
 	{ code: Scripts.Kaithi, label: "𑂍𑂶𑂟𑂲 (Kaithi)", example: "𑂣𑂹𑂩𑂝𑂰𑂧𑂹" },
 	{ code: Scripts.Devanagari, label: "देवनागरी (Devanagari)", example: "प्रणाम्" },
+	{ code: Scripts.Urdu, label: "اردو (Urdu)", example: "سلام" },
 	{ code: Scripts.Tamil, label: "தமிழ் (Tamil)", example: "வணக்கம்" },
 	{ code: Scripts.Kannada, label: "ಕನ್ನಡ (Kannada)", example: "ನಮಸ್ಕಾರ" },
 	{ code: Scripts.Telugu, label: "తెలుగు (Telugu)", example: "నమస్కారం" },
@@ -30,7 +32,7 @@ const scripts = [
 	{ code: Scripts.Gujarati, label: "ગુજરાતી (Gujarati)", example: "નમસ્કાર" },
 	{ code: Scripts.PunjabiGurmukhi, label: "ਗੁਰਮੁਖੀ (Gurmukhi)", example: "ਸਤ ਸ੍ਰੀ ਅਕਾਲ" },
 	{ code: Scripts.OriyaOdia, label: "ଓଡ଼ିଆ (Oriya)", example: "ନମସ୍କାର" },
-	{ code: Scripts.ITRANS, label: "Latin (ITRANS)", example: "namaskara" },
+	{ code: Scripts.SantaliOlChiki, label: "ᱚᱞ ᱪᱤᱠᱤ (Ol Chiki)", example: "ᱡᱚᱦᱟᱨ" },
 ];
 
 const sampleTexts = [
