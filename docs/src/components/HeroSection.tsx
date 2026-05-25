@@ -4,6 +4,7 @@ import {
 	Github,
 	ArrowRight,
 	Languages,
+	PartyPopper,
 	Globe,
 	Zap,
 	Shield,
@@ -45,6 +46,10 @@ export default function HeroSection({ onGetStartedClick }: HeroSectionProps) {
 				<div className="mx-auto max-w-6xl">
 					{/* Top badges */}
 					<div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+						<div className="inline-flex items-center gap-2 rounded-full border border-amber-300/50 dark:border-amber-700/50 bg-amber-100/60 dark:bg-amber-900/30 px-4 py-2 text-sm font-medium text-amber-700 dark:text-amber-300 shadow-sm font-sans">
+							<PartyPopper className="h-4 w-4" />
+							Now Pluggable!
+						</div>
 						<div className="inline-flex items-center gap-2 rounded-full border border-teal-300/50 dark:border-teal-700/50 bg-teal-100/60 dark:bg-teal-900/30 px-4 py-2 text-sm font-medium text-teal-700 dark:text-teal-300 shadow-sm font-sans">
 							<Languages className="h-4 w-4" />
 							Open Source
